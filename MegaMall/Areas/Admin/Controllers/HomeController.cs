@@ -142,5 +142,74 @@ namespace MegaMall.Areas.Admin.Controllers
 
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportReport()
+        {
+            // Gather Data
+            var totalSales = await _context.Orders
+                .Where(o => o.Status != OrderStatus.Cancelled)
+                .SumAsync(o => o.TotalAmount);
+
+            var orders = await _context.Orders
+                .Include(o => o.User)
+                .OrderByDescending(o => o.OrderDate)
+                .Take(1000)
+                .ToListAsync();
+
+            var products = await _context.Products
+                .Include(p => p.Category)
+                .Include(p => p.Seller)
+                .OrderByDescending(p => p.CreatedDate)
+                .Take(1000)
+                .ToListAsync();
+
+            // Build CSV with BOM for Excel compatibility
+            var csv = new System.Text.StringBuilder();
+            // Start with BOM
+            csv.Append('\uFEFF'); 
+
+            // 1. Summary
+            csv.AppendLine("BÁO CÁO TỔNG QUAN HỆ THỐNG MEGAMALL");
+            csv.AppendLine($"Ngày xuất: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
+            csv.AppendLine($"Tổng doanh thu: {totalSales:N0}");
+            csv.AppendLine($"Tổng số đơn hàng: {await _context.Orders.CountAsync()}");
+            csv.AppendLine($"Tổng số thành viên: {await _context.Users.CountAsync()}");
+            csv.AppendLine($"Tổng số sản phẩm: {await _context.Products.CountAsync()}");
+            csv.AppendLine();
+
+            // 2. Orders
+            csv.AppendLine("DANH SÁCH ĐƠN HÀNG GẦN ĐÂY (Top 1000)");
+            csv.AppendLine("Mã Đơn,Ngày Đặt,Khách Hàng,Tổng Tiền,Trạng Thái,Phương Thức TT");
+            foreach (var order in orders)
+            {
+                var customerName = order.User?.FullName ?? "Khách vãng lai";
+                // Escape commas in names
+                customerName = "\"" + customerName.Replace("\"", "\"\"") + "\"";
+                var status = order.Status.ToString();
+                csv.AppendLine($"{order.Id},{order.OrderDate:dd/MM/yyyy HH:mm},{customerName},{order.TotalAmount:F0},{status},{order.PaymentMethod}");
+            }
+            csv.AppendLine();
+
+            // 3. Products
+            csv.AppendLine("DANH SÁCH SẢN PHẨM MỚI (Top 1000)");
+            csv.AppendLine("ID,Tên Sản Phẩm,Danh Mục,Người Bán,Ngày Tạo");
+            foreach (var prod in products)
+            {
+                var category = prod.Category?.Name ?? "N/A";
+                var seller = prod.Seller?.ShopName ?? prod.Seller?.UserName ?? "N/A";
+                
+                var name = "\"" + prod.Name.Replace("\"", "\"\"") + "\"";
+                category = "\"" + category.Replace("\"", "\"\"") + "\"";
+                seller = "\"" + seller.Replace("\"", "\"\"") + "\"";
+
+                csv.AppendLine($"{prod.Id},{name},{category},{seller},{prod.CreatedDate:dd/MM/yyyy}");
+            }
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(csv.ToString());
+            var result = new FileContentResult(bytes, "text/csv");
+            result.FileDownloadName = $"BaoCao_MegaMall_{DateTime.Now:yyyyMMddHHmm}.csv";
+            return result;
+        }
     }
 }
