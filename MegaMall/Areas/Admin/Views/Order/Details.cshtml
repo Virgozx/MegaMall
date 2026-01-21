@@ -1,0 +1,129 @@
+@model MegaMall.Domain.Entities.Order
+@using MegaMall.Domain.Enums
+
+@{
+    ViewData["Title"] = "Chi tiết Đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Chi tiết Đơn hàng #@Model.Id</h1>
+        <a asp-action="Index" class="btn btn-sm btn-secondary shadow-sm">
+            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    
+    <div class="row">
+        <!-- Order Items -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Sản phẩm trong đơn</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold">@item.ProductName</div>
+                                            <small class="text-muted">SKU: @item.Sku</small>
+                                        </td>
+                                        <td>@item.UnitPrice.ToString("N0") đ</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="fw-bold text-primary">@((item.UnitPrice * item.Quantity).ToString("N0")) đ</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
+                                    <td class="fw-bold text-danger fs-5">@Model.TotalAmount.ToString("N0") đ</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Info & Status -->
+        <div class="col-lg-4">
+            <!-- Status Update -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Cập nhật Trạng thái</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="small font-weight-bold text-muted">Trạng thái hiện tại:</label>
+                        <div class="mt-1">
+                            @switch ((int)Model.Status)
+                            {
+                                case 0: <span class="badge bg-warning text-dark fs-6">Chờ xử lý</span>; break;
+                                case 1: <span class="badge bg-info fs-6">Đang xử lý</span>; break;
+                                case 2: <span class="badge bg-primary fs-6">Đang giao</span>; break;
+                                case 3: <span class="badge bg-success fs-6">Đã giao</span>; break;
+                                case 4: <span class="badge bg-danger fs-6">Đã hủy</span>; break;
+                                default: <span class="badge bg-secondary fs-6">@Model.Status</span>; break;
+                            }
+                        </div>
+                    </div>
+                    <hr>
+                    <form asp-action="UpdateStatus" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Đổi trạng thái:</label>
+                            <select name="status" class="form-select" asp-items="Html.GetEnumSelectList<OrderStatus>()"></select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Cập nhật
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Customer Info -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin Khách hàng</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="bi bi-person text-muted me-2"></i>
+                        <strong>Họ tên:</strong> <br>
+                        <span class="ms-4">@(Model.User?.FullName ?? "Khách vãng lai")</span>
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-telephone text-muted me-2"></i>
+                        <strong>Số điện thoại:</strong> <br>
+                        <span class="ms-4">@Model.PhoneNumber</span>
+                    </div>
+                    <div class="mb-3">
+                        <i class="bi bi-geo-alt text-muted me-2"></i>
+                        <strong>Địa chỉ giao hàng:</strong> <br>
+                        <span class="ms-4">@Model.ShippingAddress, @Model.ShippingCity</span>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Note))
+                    {
+                        <div class="alert alert-warning mt-3 mb-0">
+                            <i class="bi bi-sticky"></i> <strong>Ghi chú:</strong><br>
+                            @Model.Note
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

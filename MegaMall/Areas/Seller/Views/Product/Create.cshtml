@@ -1,0 +1,219 @@
+@model MegaMall.Areas.Seller.ViewModels.CreateProductViewModel
+
+@{
+    ViewData["Title"] = "Tạo sản phẩm mới";
+    Layout = "~/Areas/Seller/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="bi bi-plus-circle"></i> Tạo sản phẩm mới</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create" enctype="multipart/form-data" id="createProductForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Thông tin cơ bản</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Tên sản phẩm</label>
+                        <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Mô tả</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả chi tiết sản phẩm"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CategoryId" class="form-label">Danh mục</label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))">
+                                <option value="">-- Chọn danh mục --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Material" class="form-label">Chất liệu</label>
+                            <input asp-for="Material" class="form-control" placeholder="VD: Cotton, Nhựa, Thép..." />
+                            <span asp-validation-for="Material" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Images" class="form-label">Hình ảnh sản phẩm</label>
+                        <input asp-for="Images" class="form-control" type="file" multiple accept="image/*" />
+                        <span asp-validation-for="Images" class="text-danger"></span>
+                        <div class="form-text">Có thể chọn nhiều ảnh cùng lúc</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Videos" class="form-label">Video sản phẩm <span class="text-muted fw-normal fst-italic">(Tùy chọn)</span></label>
+                        <input asp-for="Videos" class="form-control" type="file" multiple accept="video/*" />
+                        <span asp-validation-for="Videos" class="text-danger"></span>
+                        <div class="form-text">Có thể chọn nhiều video cùng lúc. Định dạng: mp4, mov...</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="SoldBehavior" class="form-label">
+                            <i class="bi bi-box-seam"></i> Hành vi khi sản phẩm bán hết
+                        </label>
+                        <select asp-for="SoldBehavior" class="form-select">
+                            <option value="0">Hiển thị "Hết hàng" (Sản phẩm vẫn hiển thị trên trang web)</option>
+                            <option value="1">Tự động ẩn (Sản phẩm sẽ bị ẩn khỏi trang web)</option>
+                        </select>
+                        <div class="form-text">
+                            <small>
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Hiển thị "Hết hàng":</strong> Khách hàng vẫn thấy sản phẩm nhưng không thể mua.<br>
+                                <i class="bi bi-info-circle"></i> 
+                                <strong>Tự động ẩn:</strong> Sản phẩm sẽ biến mất hoàn toàn khỏi trang web khi hết hàng.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Biến thể sản phẩm</h5>
+                    <button type="button" class="btn btn-sm btn-light" onclick="addVariant()">
+                        <i class="bi bi-plus-circle"></i> Thêm biến thể
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="variantsContainer">
+                        <!-- Variants will be added here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-check-circle"></i> Tạo sản phẩm
+                </button>
+                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                    <i class="bi bi-x-circle"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let variantIndex = 0;
+
+        function addVariant(data = null) {
+            const container = document.getElementById('variantsContainer');
+            
+            const sku = data ? data.sku : '';
+            const price = data ? data.price : '';
+            const originalPrice = data && data.originalPrice ? data.originalPrice : '';
+            const stockQuantity = data ? data.stockQuantity : '';
+            const color = data && data.color ? data.color : '';
+            const size = data && data.size ? data.size : '';
+            const otherAttribute = data && data.otherAttribute ? data.otherAttribute : '';
+
+            const variantHtml = `
+                <div class="variant-item border rounded p-3 mb-3 bg-light" data-index="${variantIndex}">
+                    <input type="hidden" name="Variants.Index" value="${variantIndex}" />
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Biến thể #${variantIndex + 1}</h6>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant(this)">
+                            <i class="bi bi-trash"></i> Xóa
+                        </button>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">SKU <span class="text-danger">*</span></label>
+                            <input type="text" name="Variants[${variantIndex}].Sku" class="form-control" value="${sku}" placeholder="VD: PRD-001-RED-L" required />
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Giá (đ) <span class="text-danger">*</span></label>
+                            <input type="number" name="Variants[${variantIndex}].Price" class="form-control" value="${price}" placeholder="VD: 100000" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Giá gốc (đ)</label>
+                            <input type="number" name="Variants[${variantIndex}].OriginalPrice" class="form-control" value="${originalPrice}" placeholder="Để trống nếu không có" />
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label">Số lượng <span class="text-danger">*</span></label>
+                            <input type="number" name="Variants[${variantIndex}].StockQuantity" class="form-control" value="${stockQuantity}" placeholder="VD: 50" required />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Màu sắc</label>
+                            <input type="text" name="Variants[${variantIndex}].Color" class="form-control" value="${color}" placeholder="VD: Đỏ, Xanh..." />
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Kích thước</label>
+                            <input type="text" name="Variants[${variantIndex}].Size" class="form-control" value="${size}" placeholder="VD: S, M, L, XL..." />
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Thuộc tính khác</label>
+                            <input type="text" name="Variants[${variantIndex}].OtherAttribute" class="form-control" value="${otherAttribute}" placeholder="VD: Có kèm hộp..." />
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', variantHtml);
+            variantIndex++;
+        }
+
+        function removeVariant(button) {
+            const variantItem = button.closest('.variant-item');
+            variantItem.remove();
+        }
+
+        // Initialize variants (default or from model on error)
+        document.addEventListener('DOMContentLoaded', function() {
+            var existingVariants = @Json.Serialize(Model?.Variants?.Select(v => new {
+                sku = v.Sku,
+                price = v.Price,
+                originalPrice = v.OriginalPrice,
+                stockQuantity = v.StockQuantity,
+                color = v.Color,
+                size = v.Size,
+                otherAttribute = v.OtherAttribute
+            }));
+
+            if (existingVariants && existingVariants.length > 0) {
+                existingVariants.forEach(function(v) {
+                    addVariant(v);
+                });
+            } else {
+                addVariant(); // Add default empty one
+            }
+        });
+
+        // Form validation
+        document.getElementById('createProductForm').addEventListener('submit', function(e) {
+            const variants = document.querySelectorAll('.variant-item');
+            if (variants.length === 0) {
+                e.preventDefault();
+                alert('Vui lòng thêm ít nhất một biến thể sản phẩm!');
+                return false;
+            }
+        });
+    </script>
+    <style>
+        .variant-item {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .variant-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+}

@@ -1,0 +1,104 @@
+@model MegaMall.Domain.Entities.Product
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-gray-800">Chỉnh sửa sản phẩm</h1>
+        <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Thông tin sản phẩm</h6>
+        </div>
+        <div class="card-body">
+            <form asp-area="Admin" asp-controller="Product" asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Tên sản phẩm</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="CategoryId" class="form-label fw-bold">Danh mục</label>
+                            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="SellerId" class="form-label fw-bold">Người bán</label>
+                            <select asp-for="SellerId" class="form-control" asp-items="ViewBag.SellerId"></select>
+                            <span asp-validation-for="SellerId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="CreatedDate" class="form-label fw-bold">Ngày tạo</label>
+                            <input asp-for="CreatedDate" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="CreatedDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="form-label fw-bold">Mô tả</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="AttributesJson" class="form-label fw-bold">Thuộc tính (JSON)</label>
+                    <textarea asp-for="AttributesJson" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="AttributesJson" class="text-danger"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" asp-for="IsPublished" />
+                            <label class="form-check-label fw-bold" asp-for="IsPublished">
+                                Xuất bản sản phẩm
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" asp-for="IsDeleted" />
+                            <label class="form-check-label fw-bold" asp-for="IsDeleted">
+                                Đánh dấu đã xóa
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Lưu thay đổi
+                    </button>
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Hủy
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

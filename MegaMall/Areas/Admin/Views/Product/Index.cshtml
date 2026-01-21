@@ -1,0 +1,81 @@
+@model IEnumerable<MegaMall.Domain.Entities.Product>
+
+@{
+    ViewData["Title"] = "Quản lý Sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 text-gray-800 mb-0">Quản lý Sản phẩm</h1>
+        <p class="text-muted mb-0">Quản lý tất cả sản phẩm trên hệ thống</p>
+    </div>
+    <a href="/Admin/Product/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-box-seam"></i> Danh sách Sản phẩm</h6>
+    </div>
+        <div class="card-body">
+            <div class="table-responsive">
+<table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục</th>
+                            <th>Người bán</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>
+                                    <strong>@item.Name</strong>
+                                    <br />
+                                    <small class="text-muted">@(item.Description?.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description)</small>
+                                </td>
+                                <td><span class="badge bg-secondary">@item.Category?.Name</span></td>
+                                <td>@item.Seller?.ShopName</td>
+                                <td>
+                                    @if (item.IsPublished)
+                                    {
+                                        <span class="badge bg-success">Đã xuất bản</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Nháp</span>
+                                    }
+                                    @if (item.IsDeleted)
+                                    {
+                                        <span class="badge bg-danger">Đã xóa</span>
+                                    }
+                                </td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a href="/Admin/Product/Details/@item.Id" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="/Admin/Product/Edit/@item.Id" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="/Admin/Product/Delete/@item.Id" class="btn btn-sm btn-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

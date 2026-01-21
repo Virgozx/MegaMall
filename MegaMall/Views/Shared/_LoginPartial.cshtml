@@ -1,0 +1,77 @@
+@using Microsoft.AspNetCore.Identity
+@using MegaMall.Domain.Entities
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="dropdown" style="position: relative; z-index: 10000;">
+        <button class="btn btn-link nav-link-custom text-decoration-none dropdown-toggle d-flex align-items-center gap-2 p-0 border-0" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="user-avatar">
+                <i class="bi bi-person-circle fs-4"></i>
+            </div>
+            <span class="d-none d-lg-inline fw-bold">@User.Identity?.Name</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown" style="z-index: 10001;">
+            <li>
+                <a class="dropdown-item" asp-area="" asp-controller="Manage" asp-action="Index">
+                    <i class="bi bi-person-circle"></i> Tài khoản của tôi
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-area="" asp-controller="Order" asp-action="Index">
+                    <i class="bi bi-bag-check"></i> Đơn hàng của tôi
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-controller="Wishlist" asp-action="Index">
+                    <i class="bi bi-heart"></i> Yêu thích
+                </a>
+            </li>
+            @if (User.IsInRole("Seller"))
+            {
+                <li><hr class="dropdown-divider"></li>
+                <li class="dropdown-header text-muted small">QUẢN LÝ CỬA HÀNG</li>
+                <li>
+                    <a class="dropdown-item" asp-area="Seller" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i> Dashboard Seller
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Seller" asp-controller="Product" asp-action="Index">
+                        <i class="bi bi-box-seam"></i> Quản lý sản phẩm
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Seller" asp-controller="Product" asp-action="Create">
+                        <i class="bi bi-plus-circle"></i> Thêm sản phẩm mới
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Seller" asp-controller="Order" asp-action="Index">
+                        <i class="bi bi-list-check"></i> Đơn hàng của tôi
+                    </a>
+                </li>
+            }
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="dropdown-item text-danger">
+                        <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="d-flex gap-2 align-items-center">
+        <a class="btn btn-outline-dark btn-sm rounded-pill px-3" asp-area="" asp-controller="Account" asp-action="Login">
+            Đăng nhập
+        </a>
+        <a class="btn btn-dark btn-sm rounded-pill px-3" asp-area="" asp-controller="Account" asp-action="Register">
+            Đăng ký
+        </a>
+    </div>
+}

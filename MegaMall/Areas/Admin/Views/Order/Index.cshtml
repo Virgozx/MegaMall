@@ -1,0 +1,63 @@
+@model IEnumerable<MegaMall.Domain.Entities.Order>
+
+@{
+    ViewData["Title"] = "Quản lý Đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 text-gray-800 mb-0">Quản lý Đơn hàng</h1>
+        <p class="text-muted mb-0">Quản lý tất cả đơn hàng trên hệ thống</p>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-cart"></i> Danh sách Đơn hàng</h6>
+    </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Mã ĐH</th>
+                            <th>Ngày đặt</th>
+                            <th>Khách hàng</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><span class="fw-bold">#@item.Id</span></td>
+                                <td>@item.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.User?.FullName</td>
+                                <td class="text-success fw-bold">@item.TotalAmount.ToString("N0") đ</td>
+                                <td>
+                                    @switch ((int)item.Status)
+                                    {
+                                        case 0: <span class="badge bg-warning text-dark">Chờ xử lý</span>; break;
+                                        case 1: <span class="badge bg-info">Đang xử lý</span>; break;
+                                        case 2: <span class="badge bg-primary">Đang giao</span>; break;
+                                        case 3: <span class="badge bg-success">Đã giao</span>; break;
+                                        case 4: <span class="badge bg-danger">Đã hủy</span>; break;
+                                        default: <span class="badge bg-secondary">@item.Status</span>; break;
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info" title="Xem chi tiết" style="pointer-events: auto; cursor: pointer;">
+                                        <i class="bi bi-eye"></i> Chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

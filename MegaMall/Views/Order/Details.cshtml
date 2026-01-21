@@ -1,0 +1,122 @@
+@model MegaMall.Domain.Entities.Order
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Id;
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Chi tiết đơn hàng <small class="text-muted">#@Model.Id</small></h2>
+        <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Sản phẩm</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="ps-4">Sản phẩm</th>
+                                    <th scope="col" class="text-end">Giá</th>
+                                    <th scope="col" class="text-center">Số lượng</th>
+                                    <th scope="col" class="text-end pe-4">Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderItems)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                @if (item.Product?.Images != null && item.Product.Images.Any())
+                                                {
+                                                    <img src="@item.Product.Images.First().ImageUrl" alt="@item.ProductName" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                                }
+                                                <div>
+                                                    <h6 class="mb-0">@item.ProductName</h6>
+                                                    @if (!string.IsNullOrEmpty(item.Sku))
+                                                    {
+                                                        <small class="text-muted">SKU: @item.Sku</small>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-end align-middle">@item.UnitPrice.ToString("N0") đ</td>
+                                        <td class="text-center align-middle">@item.Quantity</td>
+                                        <td class="text-end align-middle pe-4">@((item.UnitPrice * item.Quantity).ToString("N0")) đ</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Tạm tính:</strong></td>
+                                    <td class="text-end pe-4">@((Model.TotalAmount + Model.DiscountAmount).ToString("N0") ) đ</td>
+                                </tr>
+                                @if (Model.DiscountAmount > 0)
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-end text-success"><strong>Giảm giá (@Model.CouponCode):</strong></td>
+                                        <td class="text-end text-success pe-4">-@Model.DiscountAmount.ToString("N0") đ</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="3" class="text-end border-0"><strong>Tổng cộng:</strong></td>
+                                    <td class="text-end border-0 pe-4"><strong class="text-primary fs-5">@Model.TotalAmount.ToString("N0") đ</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Thông tin đơn hàng</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">Ngày đặt</label>
+                        <p class="fw-bold">@Model.OrderDate.ToLocalTime().ToString("F")</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Trạng thái</label>
+                        <div>
+                            <span class="badge bg-@(Model.Status.ToString() == "Completed" ? "success" : (Model.Status.ToString() == "Cancelled" ? "danger" : "info")) fs-6">
+                                @Model.Status
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Phương thức thanh toán</label>
+                        <p class="fw-bold">@Model.PaymentMethod</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Địa chỉ giao hàng</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1 fw-bold">@Model.User?.FullName</p>
+                    <p class="mb-1">@Model.ShippingAddress</p>
+                    <p class="mb-1">@Model.ShippingCity</p>
+                    <p class="mb-0"><i class="bi bi-telephone-fill text-muted me-2"></i>@Model.PhoneNumber</p>
+                    @if (!string.IsNullOrEmpty(Model.Note))
+                    {
+                        <hr class="my-3">
+                        <label class="text-muted small">Ghi chú</label>
+                        <p class="mb-0 fst-italic">"@Model.Note"</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

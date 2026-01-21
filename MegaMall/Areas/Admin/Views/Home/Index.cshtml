@@ -1,0 +1,690 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var recentOrders = ViewBag.RecentOrders as IEnumerable<MegaMall.Domain.Entities.Order>;
+}
+
+<style>
+    .card-dashboard {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        transition: transform 0.2s;
+    }
+    .card-dashboard:hover {
+        transform: translateY(-5px);
+    }
+    .icon-circle {
+        height: 4rem;
+        width: 4rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .bg-gradient-primary-soft {
+        background: linear-gradient(135deg, rgba(78, 115, 223, 0.1) 0%, rgba(78, 115, 223, 0.2) 100%);
+        color: #4e73df;
+    }
+    .bg-gradient-success-soft {
+        background: linear-gradient(135deg, rgba(28, 200, 138, 0.1) 0%, rgba(28, 200, 138, 0.2) 100%);
+        color: #1cc88a;
+    }
+    .bg-gradient-info-soft {
+        background: linear-gradient(135deg, rgba(54, 185, 204, 0.1) 0%, rgba(54, 185, 204, 0.2) 100%);
+        color: #36b9cc;
+    }
+    .bg-gradient-warning-soft {
+        background: linear-gradient(135deg, rgba(246, 194, 62, 0.1) 0%, rgba(246, 194, 62, 0.2) 100%);
+        color: #f6c23e;
+    }
+    .text-gray-800 {
+        color: #5a5c69 !important;
+    }
+    .font-weight-bold {
+        font-weight: 700 !important;
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Tổng Quan Hệ Thống</h1>
+            <p class="text-muted mb-0">Chào mừng trở lại, Admin!</p>
+        </div>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm rounded-pill px-3">
+            <i class="bi bi-download fa-sm text-white-50 me-1"></i> Xuất Báo Cáo
+        </a>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row g-4 mb-4">
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Doanh Thu
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalSales.ToString("N0") đ</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success mr-2"><i class="bi bi-arrow-up"></i> 3.48%</span>
+                                <span>So với tháng trước</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-primary-soft">
+                                <i class="bi bi-currency-dollar fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earnings (Annual) Card Example -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Đơn Hàng
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalOrders</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success mr-2"><i class="bi bi-arrow-up"></i> 12%</span>
+                                <span>Đơn hàng mới</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-success-soft">
+                                <i class="bi bi-cart-check fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Card Example -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Người Dùng
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalUsers</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-info mr-2"><i class="bi bi-people"></i> Active</span>
+                                <span>Thành viên</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-info-soft">
+                                <i class="bi bi-people fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Sản Phẩm
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalProducts</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-warning mr-2"><i class="bi bi-box-seam"></i> Kho</span>
+                                <span>Tổng sản phẩm</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-warning-soft">
+                                <i class="bi bi-box-seam fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voucher Statistics Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="alert alert-info border-0 d-flex align-items-center shadow-sm" style="border-left: 4px solid #36b9cc !important; border-radius: 10px;">
+                <i class="bi bi-ticket-perforated fs-3 me-3"></i>
+                <div>
+                    <h5 class="mb-1 fw-bold">Quản Lý Voucher/Coupon</h5>
+                    <p class="mb-0 small">Theo dõi và quản lý các chương trình khuyến mãi của hệ thống</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Coupons -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2 border-start border-primary border-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng Voucher
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCoupons</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-primary mr-2"><i class="bi bi-ticket-detailed"></i></span>
+                                <span>Tất cả mã giảm giá</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle" style="background: linear-gradient(135deg, rgba(78, 115, 223, 0.15) 0%, rgba(78, 115, 223, 0.3) 100%); color: #4e73df;">
+                                <i class="bi bi-ticket-perforated fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Coupons -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2 border-start border-success border-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Đang Hoạt Động
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.ActiveCoupons</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-success mr-2"><i class="bi bi-check-circle"></i></span>
+                                <span>Voucher còn hiệu lực</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-success-soft">
+                                <i class="bi bi-patch-check fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Usage -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2 border-start border-info border-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Lượt Sử Dụng
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCouponUsage</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-info mr-2"><i class="bi bi-graph-up"></i></span>
+                                <span>Tổng lượt áp dụng</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-info-soft">
+                                <i class="bi bi-bar-chart fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Discount Given -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-dashboard h-100 py-2 border-start border-warning border-3">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Tổng Giảm Giá
+                            </div>
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalCouponDiscount.ToString("N0") đ</div>
+                            <div class="mt-2 mb-0 text-muted text-xs">
+                                <span class="text-warning mr-2"><i class="bi bi-cash-coin"></i></span>
+                                <span>Tiền đã giảm</span>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="icon-circle bg-gradient-warning-soft">
+                                <i class="bi bi-piggy-bank fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row g-4">
+        <!-- Area Chart -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card card-dashboard shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white border-bottom-0">
+                    <h6 class="m-0 font-weight-bold text-primary">Biểu Đồ Doanh Thu</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Tùy chọn:</div>
+                            <a class="dropdown-item" href="#">Theo tuần</a>
+                            <a class="dropdown-item" href="#">Theo tháng</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Xuất dữ liệu</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area" style="height: 350px;">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card card-dashboard shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-white border-bottom-0">
+                    <h6 class="m-0 font-weight-bold text-primary">Danh Mục Sản Phẩm</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2" style="height: 300px;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-center small text-muted">
+                        <span class="mr-2">
+                            <i class="bi bi-circle-fill text-primary"></i> Điện tử
+                        </span>
+                        <span class="mr-2">
+                            <i class="bi bi-circle-fill text-success"></i> Thời trang
+                        </span>
+                        <span class="mr-2">
+                            <i class="bi bi-circle-fill text-info"></i> Gia dụng
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+    <div class="row g-4">
+        <!-- Content Column -->
+        <div class="col-lg-6 mb-4">
+            <div class="card card-dashboard shadow mb-4">
+                <div class="card-header py-3 bg-white border-bottom-0">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Người Bán Xuất Sắc</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-bar" style="height: 300px;">
+                        <canvas id="sellerChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card card-dashboard shadow mb-4">
+                <div class="card-header py-3 bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-ticket-perforated me-2"></i>Top Voucher Phổ Biến</h6>
+                    <a asp-area="Admin" asp-controller="Coupon" asp-action="Index" class="btn btn-sm btn-light text-primary fw-bold">Quản lý</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0">Mã Voucher</th>
+                                    <th class="border-0">Loại</th>
+                                    <th class="border-0">Giảm giá</th>
+                                    <th class="border-0">Đã dùng</th>
+                                    <th class="border-0">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var topCoupons = ViewBag.TopCoupons as List<MegaMall.Domain.Entities.Coupon>;
+                                }
+                                @if (topCoupons != null && topCoupons.Any())
+                                {
+                                    foreach (var coupon in topCoupons)
+                                    {
+                                        var isActive = coupon.IsActive && coupon.ExpiryDate > DateTime.Now && coupon.UsedCount < (coupon.Quantity ?? int.MaxValue);
+                                        <tr>
+                                            <td>
+                                                <strong class="text-primary">@coupon.Code</strong>
+                                                @if (!string.IsNullOrEmpty(coupon.Description))
+                                                {
+                                                    <br><small class="text-muted">@coupon.Description</small>
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (coupon.Type)
+                                                {
+                                                    case MegaMall.Domain.Enums.CouponType.FixedAmount:
+                                                        <span class="badge bg-primary rounded-pill">Cố định</span>
+                                                        break;
+                                                    case MegaMall.Domain.Enums.CouponType.Percentage:
+                                                        <span class="badge bg-info rounded-pill">%</span>
+                                                        break;
+                                                    case MegaMall.Domain.Enums.CouponType.FreeShipping:
+                                                        <span class="badge bg-success rounded-pill">Freeship</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td class="fw-bold">
+                                                @if (coupon.Type == MegaMall.Domain.Enums.CouponType.FixedAmount)
+                                                {
+                                                    <text>@coupon.DiscountValue.ToString("N0")đ</text>
+                                                }
+                                                else if (coupon.Type == MegaMall.Domain.Enums.CouponType.Percentage)
+                                                {
+                                                    <text>@coupon.DiscountValue%</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>Miễn phí</text>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">@coupon.UsedCount / @(coupon.Quantity?.ToString() ?? "∞")</span>
+                                            </td>
+                                            <td>
+                                                @if (isActive)
+                                                {
+                                                    <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle"></i> Hoạt động</span>
+                                                }
+                                                else if (coupon.ExpiryDate <= DateTime.Now)
+                                                {
+                                                    <span class="badge bg-warning rounded-pill"><i class="bi bi-clock"></i> Hết hạn</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary rounded-pill"><i class="bi bi-pause"></i> Dừng</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else 
+                                {
+                                    <tr><td colspan="5" class="text-center text-muted py-4">Chưa có voucher nào</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vietnamese Holidays Section -->
+        <div class="col-lg-12 mb-4">
+            <div class="card card-dashboard shadow">
+                <div class="card-header py-3 bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-calendar-event me-2"></i>Ngày Lễ Sắp Tới - Gợi Ý Tạo Voucher</h6>
+                    <span class="badge bg-gradient-primary rounded-pill px-3 py-2">
+                        <i class="bi bi-google me-1"></i> Google Calendar
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-light border-start border-primary border-3 mb-3">
+                        <i class="bi bi-info-circle text-primary me-2"></i>
+                        <strong>Lợi ích:</strong> Tận dụng các ngày lễ lớn để tạo voucher hợp lý, tăng doanh thu và thu hút khách hàng.
+                    </div>
+                    @{
+                        var holidays = ViewBag.UpcomingHolidays as List<MegaMall.Interfaces.HolidayEvent>;
+                    }
+                    @if (holidays != null && holidays.Any())
+                    {
+                        <div class="row g-3">
+                            @foreach (var holiday in holidays)
+                            {
+                                var cardClass = holiday.DaysUntil <= 7 ? "border-danger" : (holiday.DaysUntil <= 14 ? "border-warning" : "border-info");
+                                var badgeClass = holiday.DaysUntil <= 7 ? "bg-danger" : (holiday.DaysUntil <= 14 ? "bg-warning" : "bg-info");
+                                var iconClass = holiday.DaysUntil <= 7 ? "text-danger" : (holiday.DaysUntil <= 14 ? "text-warning" : "text-info");
+                                
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="card h-100 border-start @cardClass border-3 shadow-sm hover-shadow">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div class="icon-circle @iconClass" style="width: 50px; height: 50px; background: linear-gradient(135deg, rgba(var(--bs-@(holiday.DaysUntil <= 7 ? "danger" : holiday.DaysUntil <= 14 ? "warning" : "info")-rgb), 0.1), rgba(var(--bs-@(holiday.DaysUntil <= 7 ? "danger" : holiday.DaysUntil <= 14 ? "warning" : "info")-rgb), 0.2));">
+                                                    <i class="bi bi-calendar-heart fs-4"></i>
+                                                </div>
+                                                <span class="badge @badgeClass rounded-pill">
+                                                    @if (holiday.DaysUntil == 0)
+                                                    {
+                                                        <text>Hôm nay</text>
+                                                    }
+                                                    else if (holiday.DaysUntil == 1)
+                                                    {
+                                                        <text>Ngày mai</text>
+                                                    }
+                                                    else
+                                                    {
+                                                        <text>Còn @holiday.DaysUntil ngày</text>
+                                                    }
+                                                </span>
+                                            </div>
+                                            <h5 class="card-title fw-bold mb-2">@holiday.Name</h5>
+                                            <p class="text-muted small mb-2">
+                                                <i class="bi bi-calendar3 me-1"></i> @holiday.Date.ToString("dd/MM/yyyy (dddd)", new System.Globalization.CultureInfo("vi-VN"))
+                                            </p>
+                                            @if (!string.IsNullOrEmpty(holiday.Description))
+                                            {
+                                                <p class="text-muted small mb-3">@holiday.Description</p>
+                                            }
+                                            <div class="d-grid gap-2">
+                                                <a asp-area="Admin" asp-controller="Coupon" asp-action="Create" 
+                                                   asp-route-suggestion="@holiday.Name" 
+                                                   class="btn btn-sm btn-outline-primary rounded-pill">
+                                                    <i class="bi bi-plus-circle me-1"></i> Tạo Voucher
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="bi bi-calendar-x fs-1 mb-3 d-block"></i>
+                            <p class="mb-2">Không tìm thấy ngày lễ sắp tới</p>
+                            <small class="text-muted">
+                                Vui lòng cấu hình Google Calendar API Key trong appsettings.json<br>
+                                hoặc hệ thống sẽ sử dụng danh sách ngày lễ mặc định.
+                            </small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card card-dashboard shadow mb-4">
+                <div class="card-header py-3 bg-white border-bottom-0 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Đơn Hàng Mới Nhất</h6>
+                    <a href="#" class="btn btn-sm btn-light text-primary fw-bold">Xem tất cả</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0">Mã ĐH</th>
+                                    <th class="border-0">Khách hàng</th>
+                                    <th class="border-0">Tổng tiền</th>
+                                    <th class="border-0">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (recentOrders != null && recentOrders.Any())
+                                {
+                                    foreach (var order in recentOrders)
+                                    {
+                                        <tr>
+                                            <td><a href="#" class="fw-bold text-dark text-decoration-none">#@order.Id</a></td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-light rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                                        <i class="bi bi-person-fill text-secondary"></i>
+                                                    </div>
+                                                    @order.User?.FullName
+                                                </div>
+                                            </td>
+                                            <td class="fw-bold text-success">@order.TotalAmount.ToString("N0") đ</td>
+                                            <td><span class="badge bg-warning text-dark rounded-pill">Chờ xử lý</span></td>
+                                        </tr>
+                                    }
+                                }
+                                else 
+                                {
+                                    <tr><td colspan="4" class="text-center text-muted py-4">Chưa có đơn hàng nào</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Set new default font family and font color to mimic Bootstrap's default styling
+    Chart.defaults.font.family = 'Nunito, -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.color = '#858796';
+
+    // 1. Sales Chart (Gradient Line)
+    var ctxSales = document.getElementById('salesChart').getContext('2d');
+    var gradientSales = ctxSales.createLinearGradient(0, 0, 0, 400);
+    gradientSales.addColorStop(0, 'rgba(78, 115, 223, 0.5)');
+    gradientSales.addColorStop(1, 'rgba(78, 115, 223, 0.05)');
+
+    new Chart(ctxSales, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.SalesLabels)),
+            datasets: [{
+                label: 'Doanh Thu',
+                data: @Html.Raw(Json.Serialize(ViewBag.SalesData)),
+                backgroundColor: gradientSales,
+                borderColor: '#4e73df',
+                pointBackgroundColor: '#4e73df',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#4e73df',
+                fill: true,
+                tension: 0.4, // Smooth curve
+                borderWidth: 3
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyColor: "#858796",
+                    titleColor: '#6e707e',
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    padding: 15,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { grid: { display: false, drawBorder: false } },
+                y: { 
+                    ticks: { 
+                        callback: function(value) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumSignificantDigits: 3 }).format(value); } 
+                    }, 
+                    grid: { color: "rgb(234, 236, 244)", zeroLineColor: "rgb(234, 236, 244)", drawBorder: false, borderDash: [2], zeroLineBorderDash: [2] } 
+                }
+            }
+        }
+    });
+
+    // 2. Category Chart (Doughnut)
+    var ctxCat = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctxCat, {
+        type: 'doughnut',
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.CatLabels)),
+            datasets: [{
+                data: @Html.Raw(Json.Serialize(ViewBag.CatData)),
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'],
+                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+                borderWidth: 5 // Thicker border for cleaner look
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } }
+            },
+            cutout: '75%', // Thinner ring
+        }
+    });
+
+    // 3. Seller Chart (Rounded Bar)
+    var ctxSeller = document.getElementById('sellerChart').getContext('2d');
+    new Chart(ctxSeller, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.SellerLabels)),
+            datasets: [{
+                label: 'Sản phẩm',
+                data: @Html.Raw(Json.Serialize(ViewBag.SellerData)),
+                backgroundColor: '#4e73df',
+                hoverBackgroundColor: '#2e59d9',
+                borderRadius: 5, // Rounded bars
+                barPercentage: 0.6
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false, drawBorder: false } },
+                y: { grid: { color: "rgb(234, 236, 244)", zeroLineColor: "rgb(234, 236, 244)", drawBorder: false, borderDash: [2], zeroLineBorderDash: [2] } }
+            }
+        }
+    });
+</script>

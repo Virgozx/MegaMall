@@ -1,0 +1,271 @@
+@model MegaMall.Areas.Seller.ViewModels.SellerDashboardViewModel
+
+@{
+    ViewData["Title"] = "Bảng điều khiển Seller";
+    Layout = "~/Areas/Seller/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 text-gray-800"><i class="bi bi-speedometer2"></i> Bảng điều khiển</h1>
+    <div>
+        <a asp-area="Seller" asp-controller="Product" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Thêm sản phẩm
+        </a>
+        <a asp-area="Seller" asp-controller="Order" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-list-check"></i> Quản lý đơn hàng
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Tổng sản phẩm
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalProducts</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-box-seam fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Đã xuất bản
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.PublishedProducts</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Tổng đơn hàng
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalOrders</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-cart fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Tồn kho
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalStock</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="bi bi-boxes fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue and Stats Row -->
+<div class="row mb-4">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-graph-up"></i> Doanh thu 7 ngày gần nhất
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="bi bi-cash-stack"></i> Tổng doanh thu
+                </h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="display-4 text-success mb-3">
+                    @Model.TotalRevenue.ToString("N0") đ
+                </div>
+                <p class="text-muted">Doanh thu tích lũy từ tất cả đơn hàng</p>
+                <hr>
+                <div class="mt-4">
+                    <a asp-area="Seller" asp-controller="Product" asp-action="Index" class="btn btn-primary btn-block mb-2">
+                        <i class="bi bi-box-seam"></i> Quản lý sản phẩm
+                    </a>
+                    <a asp-area="Seller" asp-controller="Order" asp-action="Index" class="btn btn-secondary btn-block">
+                        <i class="bi bi-list-check"></i> Xem đơn hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="bi bi-clock-history"></i> Đơn hàng gần đây
+        </h6>
+    </div>
+    <div class="card-body">
+        @if (!Model.RecentOrderItems.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 4rem; color: #ccc;"></i>
+                <p class="text-muted mt-3">Chưa có đơn hàng nào.</p>
+                <a asp-area="Seller" asp-controller="Product" asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Tạo sản phẩm đầu tiên
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="100">Mã đơn</th>
+                            <th width="150">Ngày đặt</th>
+                            <th>Sản phẩm</th>
+                            <th width="80" class="text-center">Số lượng</th>
+                            <th width="130" class="text-end">Tổng tiền</th>
+                            <th width="120" class="text-center">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RecentOrderItems)
+                        {
+                            <tr>
+                                <td><strong>#@item.OrderId</strong></td>
+                                <td>@item.Order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@item.ProductName</td>
+                                <td class="text-center">@item.Quantity</td>
+                                <td class="text-end"><strong class="text-success">@((item.Quantity * item.UnitPrice).ToString("N0")) đ</strong></td>
+                                <td class="text-center">
+                                    @{
+                                        var badgeClass = item.Status.ToString() switch
+                                        {
+                                            "Pending" => "bg-warning",
+                                            "Processing" => "bg-info",
+                                            "Shipped" => "bg-primary",
+                                            "Delivered" => "bg-success",
+                                            "Cancelled" => "bg-danger",
+                                            _ => "bg-secondary"
+                                        };
+                                        var statusText = item.Status.ToString() switch
+                                        {
+                                            "Pending" => "Chờ xử lý",
+                                            "Processing" => "Đang xử lý",
+                                            "Shipped" => "Đã gửi",
+                                            "Delivered" => "Đã giao",
+                                            "Cancelled" => "Đã hủy",
+                                            _ => item.Status.ToString()
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@statusText</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-end">
+                <a asp-area="Seller" asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                    Xem tất cả đơn hàng <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 0.25rem solid #4e73df !important;
+    }
+    .border-left-success {
+        border-left: 0.25rem solid #1cc88a !important;
+    }
+    .border-left-info {
+        border-left: 0.25rem solid #36b9cc !important;
+    }
+    .border-left-warning {
+        border-left: 0.25rem solid #f6c23e !important;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('revenueChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.ChartLabels)),
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: @Html.Raw(Json.Serialize(ViewBag.ChartData)),
+                backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                borderColor: 'rgba(28, 200, 138, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointBackgroundColor: 'rgba(28, 200, 138, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('vi-VN') + ' đ';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>

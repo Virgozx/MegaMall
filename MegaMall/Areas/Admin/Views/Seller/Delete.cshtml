@@ -1,0 +1,48 @@
+@model MegaMall.Domain.Entities.ApplicationUser
+
+@{
+    ViewData["Title"] = "Xóa Người bán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">Xóa Người bán</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h3>Bạn có chắc chắn muốn xóa người bán này?</h3>
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i> Cảnh báo: Xóa người bán sẽ xóa toàn bộ sản phẩm và dữ liệu liên quan của họ.
+            </div>
+            <div>
+                <hr />
+                <dl class="row">
+                    <dt class = "col-sm-2">
+                        Email
+                    </dt>
+                    <dd class = "col-sm-10">
+                        @Html.DisplayFor(model => model.Email)
+                    </dd>
+                    <dt class = "col-sm-2">
+                        Tên Shop
+                    </dt>
+                    <dd class = "col-sm-10">
+                        @Html.DisplayFor(model => model.ShopName)
+                    </dd>
+                    <dt class = "col-sm-2">
+                        Họ tên
+                    </dt>
+                    <dd class = "col-sm-10">
+                        @Html.DisplayFor(model => model.FullName)
+                    </dd>
+                </dl>
+                
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Xóa" class="btn btn-danger" /> |
+                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

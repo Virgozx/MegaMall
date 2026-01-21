@@ -1,0 +1,71 @@
+@model List<MegaMall.ViewModels.CartItemViewModel>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container mt-5">
+    <h1>Shopping Cart</h1>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Your cart is empty. <a asp-controller="Home" asp-action="Index">Continue Shopping</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="@item.ImageUrl" alt="@item.ProductName" class="img-thumbnail me-3" style="width: 50px;">
+                                        <div>
+                                            <h6 class="mb-0">@item.ProductName</h6>
+                                            <small class="text-muted">@item.VariantName</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@item.Price.ToString("N0") đ</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Total.ToString("N0") đ</td>
+                                <td>
+                                    <a asp-action="Remove" asp-route-variantId="@item.VariantId" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Order Summary</h5>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Total:</span>
+                            <strong class="text-danger">@Model.Sum(x => x.Total).ToString("N0") đ</strong>
+                        </div>
+                        <a asp-action="Checkout" class="btn btn-primary w-100">Proceed to Checkout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

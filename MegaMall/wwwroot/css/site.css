@@ -1,0 +1,496 @@
+:root {
+    --primary-yellow: #28a745;
+    --primary-yellow-hover: #218838;
+    --text-black: #222;
+    --bg-gray: #f4f4f4;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+body {
+    background-color: var(--bg-gray);
+    color: var(--text-black);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Header Styles */
+.header-yellow {
+    background-color: var(--primary-yellow);
+    padding: 10px 0;
+    position: relative;
+    z-index: 1030;
+}
+
+.navbar-brand {
+    font-weight: 900;
+    font-size: 1.5rem;
+    color: #222 !important;
+}
+
+.search-bar-container {
+    background: white;
+    border-radius: 4px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    box-shadow: none !important;
+}
+
+.btn-search {
+    background-color: var(--primary-yellow);
+    color: #222;
+    font-weight: bold;
+    border: none;
+}
+
+.btn-search:hover {
+    background-color: var(--primary-yellow-hover);
+}
+
+.btn-post-ad {
+    background-color: #222;
+    color: var(--primary-yellow) !important;
+    font-weight: bold;
+    border-radius: 4px;
+    padding: 8px 15px;
+}
+
+.nav-link-custom {
+    color: #222 !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+/* Header Icon Buttons */
+.nav-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #222 !important;
+    background-color: rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.nav-icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.nav-icon-btn i {
+    font-size: 1.25rem;
+}
+
+/* Badge Styles */
+.wishlist-badge,
+.notification-badge,
+.cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background-color: #d0021b;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 2px 5px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.wishlist-badge {
+    background-color: #ff1744;
+}
+
+.cart-badge {
+    background-color: #ff9800;
+}
+
+/* User Avatar */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #222;
+}
+
+/* Dropdown Menu Improvements */
+.dropdown-menu {
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-top: 8px !important;
+    z-index: 9999 !important;
+    position: absolute !important;
+}
+
+.dropdown {
+    position: relative;
+    z-index: 1000;
+}
+
+.dropdown.show {
+    z-index: 10000;
+}
+
+.dropdown-item {
+    padding: 10px 16px;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(40, 167, 69, 0.1);
+}
+
+.dropdown-item i {
+    width: 20px;
+    margin-right: 8px;
+}
+
+
+
+/* Category Grid */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    padding: 20px 0;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    .category-grid {
+        grid-template-columns: repeat(8, 1fr);
+    }
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.category-item:hover {
+    transform: translateY(-5px);
+}
+
+.category-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 10px;
+    object-fit: contain;
+}
+
+.category-name {
+    font-size: 0.85rem;
+    color: #222;
+}
+
+/* Product Card */
+.product-card {
+    border: none;
+    border-radius: 4px;
+    transition: box-shadow 0.2s;
+    background: white;
+    height: 100%;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.product-img-wrapper {
+    position: relative;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+}
+
+.product-img-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Wishlist Button on Product Card */
+.btn-wishlist {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-wishlist:hover {
+    background-color: #fff;
+    color: #ff1744;
+    transform: scale(1.1);
+}
+
+.btn-wishlist.active {
+    background-color: #ff1744;
+    color: white;
+}
+
+.btn-wishlist.active:hover {
+    background-color: #e91e63;
+}
+
+.btn-wishlist i {
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.btn-wishlist.active i {
+    font-weight: bold;
+}
+
+
+.product-info {
+    padding: 10px;
+}
+
+.product-price {
+    color: #d0021b;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.product-time {
+    font-size: 0.75rem;
+    color: #999;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode .bg-white {
+    background-color: #1e1e1e !important;
+}
+
+body.dark-mode .bg-light {
+    background-color: #2d2d2d !important;
+}
+
+body.dark-mode .text-dark {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .text-muted {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .card {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .table {
+    color: #e0e0e0;
+    border-color: #333;
+}
+
+body.dark-mode .table-light {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-control {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-mode .form-control:focus {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .navbar-light .navbar-nav .nav-link {
+    color: #e0e0e0;
+}
+
+body.dark-mode .navbar-light .navbar-brand {
+    color: #fff;
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+body.dark-mode .dropdown-item {
+    color: #e0e0e0;
+}
+
+body.dark-mode .dropdown-item:hover {
+    background-color: #333;
+}
+
+body.dark-mode .list-group-item {
+    background-color: #1e1e1e;
+    border-color: #333;
+    color: #e0e0e0;
+}
+
+/* Search Suggestions */
+#search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+body.dark-mode #search-suggestions {
+    background: #1e1e1e;
+    border-color: #333;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.suggestion-item:hover {
+    background-color: #f8f9fa;
+}
+
+body.dark-mode .suggestion-item:hover {
+    background-color: #333;
+}
+
+.suggestion-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Admin Action Buttons - Ensure Clickability */
+.table .btn,
+.table a.btn,
+.table button.btn,
+.table form button,
+.table a,
+.btn,
+a.btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    position: relative !important;
+    z-index: 9999 !important;
+}
+
+.table .btn i,
+.table a.btn i,
+.table button.btn i {
+    pointer-events: none !important;
+}
+
+.table td {
+    position: relative;
+    z-index: 1;
+}
+
+.table tr {
+    position: relative;
+    z-index: 1;
+}
+
+.table {
+    position: relative;
+    z-index: 1;
+}
+
+.table a:hover,
+.table button:hover {
+    text-decoration: none;
+}
+
+/* Force all links to be clickable */
+a {
+    pointer-events: auto !important;
+}
+
+/* Remove any overlays */
+.table::before,
+.table::after,
+.table tr::before,
+.table tr::after,
+.table td::before,
+.table td::after {
+    display: none !important;
+}

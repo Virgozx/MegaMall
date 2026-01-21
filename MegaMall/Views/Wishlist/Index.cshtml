@@ -1,0 +1,48 @@
+@model IEnumerable<MegaMall.Domain.Entities.WishlistItem>
+
+@{
+    ViewData["Title"] = "Danh sách yêu thích";
+}
+
+<div class="container mt-4">
+    <h2>Danh sách yêu thích</h2>
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12">
+                <p>Danh sách yêu thích trống.</p>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Đi mua sắm</a>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                var product = item.Product;
+                var minPrice = product.Variants.Any() ? product.Variants.Min(v => v.Price) : 0;
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                         @if (product.Images != null && product.Images.Any())
+                        {
+                            <img src="@product.Images.First().ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <img src="https://placehold.co/600x400?text=@product.Name" class="card-img-top" alt="@product.Name">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="text-danger fw-bold">@minPrice.ToString("N0") đ</p>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-primary w-100">Xem chi tiết</a>
+                            <form asp-action="Toggle" method="post" class="mt-2">
+                                <input type="hidden" name="productId" value="@product.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger w-100">Xóa</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

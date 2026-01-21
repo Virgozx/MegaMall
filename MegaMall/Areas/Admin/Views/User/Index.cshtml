@@ -1,0 +1,105 @@
+@model IEnumerable<MegaMall.Domain.Entities.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Quản lý Người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 text-gray-800 mb-0">Quản lý Người dùng</h1>
+        <p class="text-muted mb-0">Quản lý tài khoản người dùng và phân quyền</p>
+    </div>
+    <a href="/Admin/User/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Thêm người dùng mới
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-people"></i> Danh sách Người dùng</h6>
+    </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tên đầy đủ</th>
+                            <th>Email</th>
+                            <th>Địa chỉ</th>
+                            <th>Shop</th>
+                            <th>Trạng thái Seller</th>
+                            <th>Điểm thưởng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>@item.Id?.Substring(0, 8)</td>
+            <td>
+                <strong>@item.FullName</strong>
+                <br />
+                <small class="text-muted">@item.UserName</small>
+            </td>
+            <td>
+                @item.Email
+                @if (item.EmailConfirmed)
+                {
+                    <i class="bi bi-check-circle-fill text-success" title="Email đã xác thực"></i>
+                }
+            </td>
+            <td>
+                @item.Address
+                @if (!string.IsNullOrEmpty(item.City))
+                {
+                    <br /><small class="text-muted">@item.City</small>
+                }
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(item.ShopName))
+                {
+                    <strong>@item.ShopName</strong>
+                    <br />
+                    <small class="text-muted">@item.ShopDescription</small>
+                }
+                else
+                {
+                    <span class="text-muted">N/A</span>
+                }
+            </td>
+            <td>
+                @if (item.IsSellerApproved)
+                {
+                    <span class="badge bg-success">Đã duyệt</span>
+                }
+                else if (!string.IsNullOrEmpty(item.ShopName))
+                {
+                    <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Khách hàng</span>
+                }
+            </td>
+            <td><span class="badge bg-info">@item.LoyaltyPoints</span></td>
+            <td>
+                <a href="/Admin/User/Details/@item.Id" class="btn btn-sm btn-info" title="Xem chi tiết">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <a href="/Admin/User/Edit/@item.Id" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a href="/Admin/User/Delete/@item.Id" class="btn btn-sm btn-danger" title="Xóa">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
+        </tr>
+}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

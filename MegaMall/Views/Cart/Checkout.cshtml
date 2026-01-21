@@ -1,0 +1,277 @@
+@model MegaMall.ViewModels.CheckoutViewModel
+@using MegaMall.Domain.Enums
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="container mt-4">
+    <h2>Checkout</h2>
+    
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <form asp-action="Checkout" method="post" id="checkoutForm">
+                <div asp-validation-summary="All" class="alert alert-danger mb-3"></div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Shipping Information</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label"></label>
+                            <input asp-for="FullName" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label"></label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="City" class="form-label"></label>
+                            <input asp-for="City" class="form-control" />
+                            <span asp-validation-for="City" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Note" class="form-label"></label>
+                            <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Payment Method</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethod.COD)" id="paymentCOD" checked>
+                            <label class="form-check-label" for="paymentCOD">
+                                Cash On Delivery (COD)
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethod.BankTransfer)" id="paymentBank">
+                            <label class="form-check-label" for="paymentBank">
+                                Bank Transfer
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethod.CreditCard)" id="paymentCard">
+                            <label class="form-check-label" for="paymentCard">
+                                Credit Card
+                            </label>
+                        </div>
+                        
+                        <!-- Credit Card Details (Hidden by default) -->
+                        <div id="creditCardInfo" class="mt-3 p-3 bg-light border rounded" style="display:none;">
+                            <div class="mb-3">
+                                <label asp-for="CardNumber" class="form-label"></label>
+                                <input asp-for="CardNumber" class="form-control" placeholder="0000 0000 0000 0000" />
+                                <span asp-validation-for="CardNumber" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="CardHolderName" class="form-label"></label>
+                                <input asp-for="CardHolderName" class="form-control" placeholder="JOHN DOE" />
+                                <span asp-validation-for="CardHolderName" class="text-danger"></span>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ExpiryDate" class="form-label"></label>
+                                    <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" />
+                                    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="CVV" class="form-label"></label>
+                                    <input asp-for="CVV" class="form-control" placeholder="123" />
+                                    <span asp-validation-for="CVV" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg w-100" onclick="console.log('Button clicked!'); return true;">Place Order</button>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Order Summary</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush mb-3">
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                    <h6 class="my-0">@item.ProductName</h6>
+                                    <small class="text-muted">@item.VariantName x @item.Quantity</small>
+                                </div>
+                                <span class="text-muted">@item.Total.ToString("N0") đ</span>
+                            </li>
+                        }
+                        <li class="list-group-item d-flex justify-content-between bg-light">
+                            <div class="text-success">
+                                <h6 class="my-0">Subtotal</h6>
+                            </div>
+                            <span class="text-success">@Model.TotalAmount.ToString("N0") đ</span>
+                        </li>
+                        
+                        @if (Model.AvailablePoints > 0)
+                        {
+                            <li class="list-group-item d-flex justify-content-between bg-light">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" asp-for="UseLoyaltyPoints" id="usePoints">
+                                    <label class="form-check-label" for="usePoints">
+                                        Use @Model.AvailablePoints Points (Max 50%)
+                                    </label>
+                                </div>
+                                <span class="text-success" id="pointsDiscountDisplay">-0 đ</span>
+                            </li>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.CouponCode))
+                        {
+                            <li class="list-group-item d-flex justify-content-between bg-light">
+                                <div class="text-success">
+                                    <h6 class="my-0">Discount (@Model.CouponCode)</h6>
+                                </div>
+                                <span class="text-success">-@Model.DiscountAmount.ToString("N0") đ</span>
+                            </li>
+                        }
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Total (VND)</span>
+                            <strong>@Model.FinalAmount.ToString("N0") đ</strong>
+                        </li>
+                    </ul>
+
+                    @if (string.IsNullOrEmpty(Model.CouponCode))
+                    {
+                        <div class="mb-3">
+                            <label class="form-label"><i class="bi bi-ticket-perforated"></i> Mã Giảm Giá</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="couponInput" placeholder="Nhập mã voucher (VD: FREESHIP100, GIAM10K)">
+                                <button type="button" class="btn btn-success" onclick="applyCoupon()">Áp Dụng</button>
+                            </div>
+                            <div id="couponMessage" class="small mt-1"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <strong>@Model.CouponCode</strong> đã áp dụng
+                            </div>
+                            <form asp-action="RemoveCoupon" method="post" style="margin:0;">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-x"></i> Xóa
+                                </button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Debug form submit
+            $('#checkoutForm').submit(function(e) {
+                console.log('Form submit triggered!');
+                console.log('Payment Method:', $('input[name="PaymentMethod"]:checked').val());
+                console.log('Full Name:', $('#FullName').val());
+                console.log('Phone:', $('#PhoneNumber').val());
+                console.log('Address:', $('#Address').val());
+                console.log('City:', $('#City').val());
+                
+                // Don't prevent default - let form submit
+                return true;
+            });
+
+            function togglePaymentFields() {
+                if ($('#paymentCard').is(':checked')) {
+                    $('#creditCardInfo').slideDown();
+                } else {
+                    $('#creditCardInfo').slideUp();
+                }
+            }
+
+            $('input[name="PaymentMethod"]').change(togglePaymentFields);
+            
+            // Run on load in case of validation error return
+            togglePaymentFields();
+
+            // Points Logic
+            $('#usePoints').change(function() {
+                // This is just visual, the real calculation happens on server
+                // But we can estimate it here for better UX
+                if(this.checked) {
+                    // Simple estimation: 1 point = 1000 VND
+                    // In real app, you might want to fetch the exact discount via AJAX
+                    $('#pointsDiscountDisplay').text("Calculating...");
+                } else {
+                    $('#pointsDiscountDisplay').text("-0 đ");
+                }
+            });
+        });
+
+        function applyCoupon() {
+            var code = $('#couponInput').val().trim();
+            if (!code) {
+                showCouponMessage('Vui lòng nhập mã giảm giá', 'danger');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("ApplyCoupon", "Cart")',
+                method: 'POST',
+                data: { couponCode: code },
+                success: function(response) {
+                    if (response.success) {
+                        showCouponMessage(response.message, 'success');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        showCouponMessage(response.message, 'danger');
+                    }
+                },
+                error: function() {
+                    showCouponMessage('Có lỗi xảy ra, vui lòng thử lại', 'danger');
+                }
+            });
+        }
+
+        function showCouponMessage(message, type) {
+            var messageDiv = $('#couponMessage');
+            messageDiv.removeClass('text-success text-danger');
+            messageDiv.addClass('text-' + type);
+            messageDiv.text(message);
+        }
+    </script>
+}

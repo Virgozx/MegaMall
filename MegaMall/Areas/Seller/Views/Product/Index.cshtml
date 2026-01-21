@@ -1,0 +1,119 @@
+@model IEnumerable<MegaMall.Domain.Entities.Product>
+
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "~/Areas/Seller/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 text-gray-800"><i class="bi bi-box-seam"></i> Quản lý sản phẩm của tôi</h1>
+    <div>
+        <a asp-area="Seller" asp-controller="Product" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Thêm sản phẩm mới
+        </a>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Danh sách sản phẩm</h6>
+    </div>
+    <div class="card-body">
+        @if(Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="60">ID</th>
+                            <th>Tên sản phẩm</th>
+                            <th width="100">Biến thể</th>
+                            <th width="150">Khoảng giá</th>
+                            <th width="120">Trạng thái</th>
+                            <th width="250">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var minPrice = item.Variants.Any() ? item.Variants.Min(v => v.Price) : 0;
+                            var maxPrice = item.Variants.Any() ? item.Variants.Max(v => v.Price) : 0;
+                            
+                            <tr>
+                                <td class="text-center">@item.Id</td>
+                                <td>
+                                    <strong>@item.Name</strong>
+                                    <br>
+                                    <small class="text-muted">@(item.Description != null && item.Description.Length > 50 ? item.Description.Substring(0, 50) + "..." : item.Description)</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">@item.Variants.Count</span>
+                                </td>
+                                <td>
+                                    @if(minPrice == maxPrice)
+                                    {
+                                        <strong class="text-success">@minPrice.ToString("N0") đ</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-success">@minPrice.ToString("N0") - @maxPrice.ToString("N0") đ</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (item.IsPublished)
+                                    {
+                                        <span class="badge bg-success">Đã xuất bản</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Nháp</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-area="Seller" asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-info" title="Xem chi tiết">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a asp-area="Seller" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-area="Seller" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" 
+                                           class="btn btn-sm btn-danger" title="Xóa">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle"></i>
+                <strong>Chưa có sản phẩm nào!</strong>
+                <p class="mb-0">Hãy tạo sản phẩm đầu tiên của bạn bằng cách nhấn nút "Thêm sản phẩm mới" ở trên.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <h6 class="font-weight-bold text-primary"><i class="bi bi-lightbulb"></i> Mẹo quản lý sản phẩm</h6>
+                <ul class="mb-0">
+                    <li>Sử dụng hình ảnh chất lượng cao để thu hút khách hàng</li>
+                    <li>Mô tả chi tiết sản phẩm giúp tăng tỷ lệ chuyển đổi</li>
+                    <li>Cập nhật số lượng tồn kho thường xuyên để tránh đơn hàng hết hàng</li>
+                    <li>Xuất bản sản phẩm khi đã hoàn tất mọi thông tin</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

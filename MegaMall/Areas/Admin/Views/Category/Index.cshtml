@@ -1,0 +1,59 @@
+@model IEnumerable<MegaMall.Domain.Entities.Category>
+
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 text-gray-800 mb-0">Quản lý Danh mục</h1>
+        <p class="text-muted mb-0">Quản lý danh mục sản phẩm trên hệ thống</p>
+    </div>
+    <a href="/Admin/Category/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Thêm danh mục mới
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-tags"></i> Danh sách Danh mục Sản phẩm</h6>
+    </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tên danh mục</th>
+                            <th>Mô tả</th>
+                            <th>Số sản phẩm</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td><strong>@item.Name</strong></td>
+                                <td>@item.Description</td>
+                                <td><span class="badge bg-info">@(item.Products?.Count ?? 0)</span></td>
+                                <td>
+                                    <a href="/Admin/Category/Details/@item.Id" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="/Admin/Category/Edit/@item.Id" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="/Admin/Category/Delete/@item.Id" class="btn btn-sm btn-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

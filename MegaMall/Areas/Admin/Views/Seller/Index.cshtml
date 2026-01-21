@@ -1,0 +1,94 @@
+@model IEnumerable<MegaMall.Domain.Entities.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Quản lý Người bán";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 text-gray-800 mb-0">Quản lý Người bán</h1>
+        <p class="text-muted mb-0">Quản lý tài khoản người bán và phê duyệt</p>
+    </div>
+</div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách Đăng ký Người bán</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Tên Shop</th>
+                            <th>Họ tên chủ shop</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Email</td>
+                                <td>@user.ShopName</td>
+                                <td>@user.FullName</td>
+                                <td>
+                                    @if (user.IsSellerApproved)
+                                    {
+                                        <span class="badge bg-success">Đã duyệt</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!user.IsSellerApproved)
+                                    {
+                                        <form asp-area="Admin" asp-controller="Seller" asp-action="Approve" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="submit" class="btn btn-sm btn-success" title="Duyệt" style="pointer-events: auto; cursor: pointer;">
+                                                <i class="bi bi-check-lg"></i> Duyệt
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-area="Admin" asp-controller="Seller" asp-action="Reject" method="post" class="d-inline">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Hủy quyền bán" style="pointer-events: auto; cursor: pointer;">
+                                                <i class="bi bi-x-lg"></i> Hủy
+                                            </button>
+                                        </form>
+                                    }
+                                    
+                                    <form asp-area="Admin" asp-controller="Seller" asp-action="LockUnlock" asp-route-id="@user.Id" method="post" class="d-inline">
+                                        @if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-success" title="Mở khóa" style="pointer-events: auto; cursor: pointer;">
+                                                <i class="bi bi-unlock"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-warning" title="Khóa tài khoản" style="pointer-events: auto; cursor: pointer;">
+                                                <i class="bi bi-lock"></i>
+                                            </button>
+                                        }
+                                    </form>
+
+                                    <a asp-area="Admin" asp-controller="Seller" asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-danger" title="Xóa" style="pointer-events: auto; cursor: pointer;">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

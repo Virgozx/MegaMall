@@ -1,0 +1,144 @@
+@model MegaMall.Domain.Entities.ApplicationUser
+
+@{
+    ViewData["Title"] = "Chi tiết người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 text-gray-800">Chi tiết người dùng</h1>
+    <div>
+        <a asp-area="Admin" asp-controller="User" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Chỉnh sửa
+        </a>
+        <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-person"></i> Thông tin cá nhân</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Tên đăng nhập:</dt>
+                    <dd class="col-sm-8"><strong>@Model.UserName</strong></dd>
+                    
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">
+                        @Model.Email
+                        @if(Model.EmailConfirmed)
+                        {
+                            <span class="badge bg-success ms-2">Đã xác nhận</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning ms-2">Chưa xác nhận</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-4">Họ và tên:</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
+                    
+                    <dt class="col-sm-4">Số điện thoại:</dt>
+                    <dd class="col-sm-8">
+                        @Model.PhoneNumber
+                        @if(Model.PhoneNumberConfirmed)
+                        {
+                            <span class="badge bg-success ms-2">Đã xác nhận</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-4">Địa chỉ:</dt>
+                    <dd class="col-sm-8">@Model.Address</dd>
+                    
+                    <dt class="col-sm-4">Thành phố:</dt>
+                    <dd class="col-sm-8">@Model.City</dd>
+                    
+                    <dt class="col-sm-4">Điểm thưởng:</dt>
+                    <dd class="col-sm-8"><span class="badge bg-info">@Model.LoyaltyPoints điểm</span></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-shop"></i> Thông tin cửa hàng</h6>
+            </div>
+            <div class="card-body">
+                @if(!string.IsNullOrEmpty(Model.ShopName))
+                {
+                    <dl class="row">
+                        <dt class="col-sm-4">Tên cửa hàng:</dt>
+                        <dd class="col-sm-8"><strong>@Model.ShopName</strong></dd>
+                        
+                        <dt class="col-sm-4">Mô tả:</dt>
+                        <dd class="col-sm-8">@Model.ShopDescription</dd>
+                        
+                        <dt class="col-sm-4">Trạng thái:</dt>
+                        <dd class="col-sm-8">
+                            @if(Model.IsSellerApproved)
+                            {
+                                <span class="badge bg-success">Đã duyệt làm người bán</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">Chờ duyệt làm người bán</span>
+                            }
+                        </dd>
+                    </dl>
+                }
+                else
+                {
+                    <p class="text-muted"><i class="bi bi-info-circle"></i> Người dùng này chưa đăng ký cửa hàng.</p>
+                }
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-shield-lock"></i> Bảo mật</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-6">Xác thực 2 bước:</dt>
+                    <dd class="col-sm-6">
+                        @if(Model.TwoFactorEnabled)
+                        {
+                            <span class="badge bg-success">Đã bật</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Chưa bật</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-6">Khóa tài khoản:</dt>
+                    <dd class="col-sm-6">
+                        @if(Model.LockoutEnd.HasValue && Model.LockoutEnd > DateTimeOffset.Now)
+                        {
+                            <span class="badge bg-danger">Đang bị khóa đến @Model.LockoutEnd.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        }
+                        else if(Model.LockoutEnabled)
+                        {
+                            <span class="badge bg-warning">Có thể khóa</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Không khóa</span>
+                        }
+                    </dd>
+                    
+                    <dt class="col-sm-6">Đăng nhập thất bại:</dt>
+                    <dd class="col-sm-6"><span class="badge bg-info">@Model.AccessFailedCount lần</span></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>

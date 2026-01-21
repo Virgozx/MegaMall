@@ -1,0 +1,136 @@
+@model IEnumerable<MegaMall.Domain.Entities.Coupon>
+
+@{
+    ViewData["Title"] = "Quản Lý Voucher";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-ticket-perforated"></i> Quản Lý Voucher</h2>
+        <a asp-area="Admin" asp-controller="Coupon" asp-action="Create" class="btn btn-success" style="pointer-events: auto; cursor: pointer;">
+            <i class="bi bi-plus-lg"></i> Tạo Voucher Mới
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Chưa có voucher nào. Hãy tạo voucher mới để khách hàng có thể sử dụng!
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Mã Voucher</th>
+                            <th>Loại</th>
+                            <th>Giảm Giá</th>
+                            <th>Đơn Tối Thiểu</th>
+                            <th>Số Lượng</th>
+                            <th>Đã Dùng</th>
+                            <th>Hết Hạn</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var isExpired = item.ExpiryDate <= DateTime.Now;
+                            var isOutOfStock = item.UsedCount >= item.Quantity;
+                            var isActive = item.IsActive && !isExpired && !isOutOfStock;
+
+                            <tr class="@(isActive ? "" : "table-secondary")">
+                                <td>
+                                    <strong>@item.Code</strong>
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    {
+                                        <br><small class="text-muted">@item.Description</small>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (item.Type)
+                                    {
+                                        case MegaMall.Domain.Enums.CouponType.FixedAmount:
+                                            <span class="badge bg-primary">Giảm Cố Định</span>
+                                            break;
+                                        case MegaMall.Domain.Enums.CouponType.Percentage:
+                                            <span class="badge bg-info">Giảm %</span>
+                                            break;
+                                        case MegaMall.Domain.Enums.CouponType.FreeShipping:
+                                            <span class="badge bg-success">Freeship</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Type == MegaMall.Domain.Enums.CouponType.FixedAmount)
+                                    {
+                                        <text>@item.DiscountValue.ToString("N0") đ</text>
+                                    }
+                                    else if (item.Type == MegaMall.Domain.Enums.CouponType.Percentage)
+                                    {
+                                        <text>@item.DiscountValue%</text>
+                                        @if (item.MaxDiscountAmount.HasValue)
+                                        {
+                                            <br><small class="text-muted">Tối đa: @item.MaxDiscountAmount.Value.ToString("N0")đ</small>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <text>Miễn phí ship</text>
+                                    }
+                                </td>
+                                <td>@item.MinOrderAmount.ToString("N0") đ</td>
+                                <td>@item.Quantity</td>
+                                <td>
+                                    @item.UsedCount
+                                    @if (isOutOfStock)
+                                    {
+                                        <br><span class="badge bg-danger">Hết</span>
+                                    }
+                                </td>
+                                <td>
+                                    @item.ExpiryDate.ToString("dd/MM/yyyy HH:mm")
+                                    @if (isExpired)
+                                    {
+                                        <br><span class="badge bg-warning">Đã hết hạn</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (isActive)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Hoạt Động</span>
+                                    }
+                                    else if (!item.IsActive)
+                                    {
+                                        <span class="badge bg-secondary"><i class="bi bi-pause-circle"></i> Tạm Dừng</span>
+                                    }
+                                    else if (isExpired)
+                                    {
+                                        <span class="badge bg-warning"><i class="bi bi-clock-history"></i> Hết Hạn</span>
+                                    }
+                                    else if (isOutOfStock)
+                                    {
+                                        <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Hết Lượt</span>
+                                    }
+                                </td>
+                                <td>
+                                    <form asp-area="Admin" asp-controller="Coupon" asp-action="Delete" method="post" class="d-inline" 
+                                          onsubmit="return confirm('Bạn có chắc muốn xóa voucher @item.Code?')">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger" style="pointer-events: auto; cursor: pointer;">
+                                            <i class="bi bi-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,91 @@
+@model MegaMall.Domain.Entities.ApplicationUser
+
+@{
+    ViewData["Title"] = "Xóa người dùng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 text-gray-800">Xóa người dùng</h1>
+    <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="card shadow mb-4 border-danger">
+    <div class="card-header py-3 bg-danger text-white">
+        <h6 class="m-0 font-weight-bold">
+            <i class="bi bi-exclamation-triangle"></i> Xác nhận xóa
+        </h6>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-circle"></i>
+            <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa người dùng này không? Hành động này không thể hoàn tác.
+        </div>
+        
+        <dl class="row">
+            <dt class="col-sm-3">Tên đăng nhập:</dt>
+            <dd class="col-sm-9"><strong>@Model.UserName</strong></dd>
+            
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+            
+            <dt class="col-sm-3">Họ và tên:</dt>
+            <dd class="col-sm-9">@Model.FullName</dd>
+            
+            <dt class="col-sm-3">Số điện thoại:</dt>
+            <dd class="col-sm-9">@Model.PhoneNumber</dd>
+            
+            <dt class="col-sm-3">Địa chỉ:</dt>
+            <dd class="col-sm-9">@Model.Address, @Model.City</dd>
+            
+            <dt class="col-sm-3">Cửa hàng:</dt>
+            <dd class="col-sm-9">
+                @if(!string.IsNullOrEmpty(Model.ShopName))
+                {
+                    <span>@Model.ShopName</span>
+                    if(Model.IsSellerApproved)
+                    {
+                        <span class="badge bg-success ms-2">Đã duyệt</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning ms-2">Chưa duyệt</span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">Không có</span>
+                }
+            </dd>
+            
+            <dt class="col-sm-3">Điểm thưởng:</dt>
+            <dd class="col-sm-9"><span class="badge bg-info">@Model.LoyaltyPoints điểm</span></dd>
+            
+            <dt class="col-sm-3">Trạng thái email:</dt>
+            <dd class="col-sm-9">
+                @if(Model.EmailConfirmed)
+                {
+                    <span class="badge bg-success">Đã xác nhận</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning">Chưa xác nhận</span>
+                }
+            </dd>
+        </dl>
+        
+        <form asp-area="Admin" asp-controller="User" asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div class="mt-4">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Xác nhận xóa
+                </button>
+                <a asp-area="Admin" asp-controller="User" asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

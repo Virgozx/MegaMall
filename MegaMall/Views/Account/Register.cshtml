@@ -1,0 +1,70 @@
+@model MegaMall.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4 fw-bold">Đăng ký tài khoản</h2>
+                <form asp-action="Register">
+                    <div asp-validation-summary="All" class="text-danger small mb-3"></div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="FullName" class="form-control" placeholder="Họ và tên" />
+                        <label asp-for="FullName">Họ và tên</label>
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                        <label asp-for="Email">Email</label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" class="form-control" placeholder="Mật khẩu" />
+                        <label asp-for="Password">Mật khẩu</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" />
+                        <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-check mb-3 bg-light p-3 rounded">
+                        <input asp-for="IsSeller" class="form-check-input" id="isSellerCheck" />
+                        <label asp-for="IsSeller" class="form-check-label fw-bold">Đăng ký bán hàng (Tạo Shop)</label>
+                    </div>
+
+                    <div class="form-floating mb-3" id="shopNameGroup" style="display:none;">
+                        <input asp-for="ShopName" class="form-control" placeholder="Tên cửa hàng" />
+                        <label asp-for="ShopName">Tên cửa hàng</label>
+                        <span asp-validation-for="ShopName" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning btn-lg fw-bold text-white">Đăng ký</button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <p>Đã có tài khoản? <a asp-action="Login" class="text-decoration-none fw-bold text-warning">Đăng nhập</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('isSellerCheck').addEventListener('change', function() {
+            document.getElementById('shopNameGroup').style.display = this.checked ? 'block' : 'none';
+        });
+    </script>
+}

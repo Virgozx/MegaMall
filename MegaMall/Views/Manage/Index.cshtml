@@ -1,0 +1,114 @@
+@model MegaMall.Domain.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "Hồ sơ";
+    ViewData["ActivePage"] = "Profile";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <partial name="_ManageNav" />
+        </div>
+        <div class="col-md-9">
+            <h3>Hồ sơ cá nhân</h3>
+            @if (TempData["StatusMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["StatusMessage"]</div>
+            }
+            <form asp-action="UpdateProfile" method="post" id="profileForm">
+                <!-- Avatar Upload Section -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Ảnh đại diện</label>
+                    <div class="d-flex align-items-center gap-3">
+                        <div>
+                            <img id="avatarPreview" src="@(string.IsNullOrEmpty(Model.AvatarUrl) ? "https://via.placeholder.com/120" : Model.AvatarUrl)" 
+                                 alt="Avatar" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #e9ecef;" />
+                        </div>
+                        <div>
+                            <input type="file" id="avatarUpload" class="form-control mb-2" accept="image/*" />
+                            <small class="text-muted d-block">Nhấp để tải lên ảnh mới (Tối đa 2MB)</small>
+                            <div id="uploadStatus" class="mt-2"></div>
+                            <input type="hidden" id="avatarUrl" name="AvatarUrl" value="@Model.AvatarUrl" />
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="text" class="form-control" value="@Model.Email" disabled />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label">Địa chỉ</label>
+                    <input asp-for="Address" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="City" class="form-label">Thành phố</label>
+                    <input asp-for="City" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const IMGBB_API_KEY = '20a7f0ef193c990e4a393feccc1fe017';
+
+        document.getElementById('avatarUpload').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            
+            if (!file) return;
+
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('File quá lớn! Vui lòng chọn ảnh dưới 2MB.');
+                return;
+            }
+
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.innerHTML = '<div class="spinner-border spinner-border-sm text-primary" role="status"></div> <span class="text-muted">Đang upload...</span>';
+
+            try {
+                const url = await uploadToImgBB(file);
+                
+                // Update preview
+                document.getElementById('avatarPreview').src = url;
+                
+                // Update hidden input
+                document.getElementById('avatarUrl').value = url;
+                
+                statusDiv.innerHTML = '<span class="text-success"><i class="bi bi-check-circle-fill"></i> Upload thành công!</span>';
+            } catch (error) {
+                console.error('Upload failed:', error);
+                statusDiv.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle-fill"></i> Lỗi khi upload ảnh!</span>';
+            }
+        });
+
+        async function uploadToImgBB(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                return data.data.url;
+            } else {
+                throw new Error('Upload failed');
+            }
+        }
+    </script>
+}

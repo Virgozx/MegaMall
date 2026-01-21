@@ -1,0 +1,154 @@
+@model MegaMall.Domain.Entities.Product
+
+@{
+    ViewData["Title"] = "Chỉnh sửa sản phẩm";
+    Layout = "~/Areas/Seller/Views/Shared/_Layout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 text-gray-800">Chỉnh sửa sản phẩm</h1>
+    <a asp-area="Seller" asp-controller="Product" asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-pencil"></i> Thông tin sản phẩm</h6>
+    </div>
+    <div class="card-body">
+        <form asp-area="Seller" asp-controller="Product" asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="SellerId" />
+            <input type="hidden" asp-for="CreatedDate" />
+            <input type="hidden" asp-for="AttributesJson" />
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label fw-bold">Tên sản phẩm</label>
+                        <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="CategoryId" class="form-label fw-bold">Danh mục</label>
+                        <select asp-for="CategoryId" class="form-control">
+                            <option value="">-- Chọn danh mục --</option>
+                            @foreach(var cat in ViewBag.Categories)
+                            {
+                                <option value="@cat.Id" selected="@(cat.Id == Model.CategoryId)">@cat.Name</option>
+                            }
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Description" class="form-label fw-bold">Mô tả sản phẩm</label>
+                <textarea asp-for="Description" class="form-control" rows="5" placeholder="Nhập mô tả chi tiết về sản phẩm"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label class="form-label fw-bold">Thêm hình ảnh mới</label>
+                <input type="file" name="NewImages" class="form-control" multiple accept="image/*" />
+                <small class="form-text text-muted">Bạn có thể chọn nhiều ảnh cùng lúc</small>
+            </div>
+
+            @if(Model.Images != null && Model.Images.Any())
+            {
+                <div class="form-group mb-3">
+                    <label class="form-label fw-bold">Hình ảnh hiện tại</label>
+                    <div class="row">
+                        @foreach(var image in Model.Images)
+                        {
+                            <div class="col-md-2 mb-2">
+                                <div class="card">
+                                    <img src="@image.ImageUrl" class="card-img-top" style="height: 100px; object-fit: cover;" alt="Product Image">
+                                    @if(image.IsMain)
+                                    {
+                                        <div class="card-body p-1 text-center">
+                                            <small class="badge bg-primary">Chính</small>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" asp-for="IsPublished" />
+                        <label class="form-check-label fw-bold" asp-for="IsPublished">
+                            Xuất bản sản phẩm (Khách hàng có thể thấy)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-save"></i> Lưu thay đổi
+                </button>
+                <a asp-area="Seller" asp-controller="Product" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-info">
+                    <i class="bi bi-eye"></i> Xem chi tiết
+                </a>
+                <a asp-area="Seller" asp-controller="Product" asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Hủy
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if(Model.Variants != null && Model.Variants.Any())
+{
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="bi bi-tags"></i> Biến thể sản phẩm</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>SKU</th>
+                            <th>Giá gốc</th>
+                            <th>Giá bán</th>
+                            <th>Số lượng</th>
+                            <th>Thuộc tính</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var variant in Model.Variants)
+                        {
+                            <tr>
+                                <td><code>@variant.Sku</code></td>
+                                <td>@string.Format("{0:N0}", variant.OriginalPrice) đ</td>
+                                <td><strong class="text-success">@string.Format("{0:N0}", variant.Price) đ</strong></td>
+                                <td>
+                                    <span class="badge @(variant.StockQuantity > 10 ? "bg-success" : variant.StockQuantity > 0 ? "bg-warning" : "bg-danger")">
+                                        @variant.StockQuantity
+                                    </span>
+                                </td>
+                                <td><small>@variant.VariantPropertiesJson</small></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-muted"><small><i class="bi bi-info-circle"></i> Để chỉnh sửa biến thể, vui lòng liên hệ quản trị viên</small></p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

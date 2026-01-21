@@ -1,0 +1,45 @@
+@model MegaMall.Domain.Entities.Order
+@using MegaMall.Domain.Enums
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mt-5 text-center">
+    <div class="card shadow-sm p-5">
+        <div class="card-body">
+            <i class="bi bi-check-circle-fill text-success display-1"></i>
+            <h1 class="mt-3">Thank You!</h1>
+            <p class="lead">Your order <strong>#@Model.Id</strong> has been placed successfully.</p>
+            
+            <div class="alert alert-info mt-4 text-start d-inline-block">
+                <h5>Payment Information</h5>
+                <p><strong>Method:</strong> @Model.PaymentMethod</p>
+                <p><strong>Total Amount:</strong> @Model.TotalAmount.ToString("N0") đ</p>
+                
+                @if (Model.PaymentMethod == PaymentMethod.BankTransfer)
+                {
+                    <hr />
+                    <h6>Please transfer the amount to:</h6>
+                    <p class="mb-0">Bank: <strong>Vietcombank</strong></p>
+                    <p class="mb-0">Account: <strong>0123456789</strong></p>
+                    <p class="mb-0">Name: <strong>MEGAMALL CORP</strong></p>
+                    <p>Content: <strong>ORDER #@Model.Id</strong></p>
+                }
+                else if (Model.PaymentMethod == PaymentMethod.CreditCard)
+                {
+                     <p class="text-success"><i class="bi bi-credit-card"></i> Payment processed successfully (Mock).</p>
+                }
+                else
+                {
+                    <p>Please pay the courier upon delivery.</p>
+                }
+            </div>
+
+            <div class="mt-4">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Continue Shopping</a>
+                <a asp-controller="Order" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary">View Order Details</a>
+            </div>
+        </div>
+    </div>
+</div>

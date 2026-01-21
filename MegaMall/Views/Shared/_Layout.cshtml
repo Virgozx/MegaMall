@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MegaMall - Sàn Thương Mại Điện Tử</title>
+    <meta name="description" content="@(ViewData["MetaDescription"] ?? "MegaMall - Mua bán trực tuyến nhanh chóng, tiện lợi, an toàn.")" />
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/voucher.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MegaMall.styles.css" asp-append-version="true" />
+</head>
+<body>
+    @Html.AntiForgeryToken()
+    <header class="header-yellow sticky-top">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <!-- Logo -->
+                <a class="navbar-brand me-4" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="https://static.chotot.com/storage/default/transparent_logo.webp" alt="MegaMall" height="40" style="display:none;"> <!-- Placeholder for real logo -->
+                    MegaMall
+                </a>
+
+                <!-- Right Actions -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Chat -->
+                    <a asp-controller="Support" asp-action="Index" class="nav-icon-btn text-decoration-none d-none d-lg-flex" title="Tin nhắn">
+                        <i class="bi bi-chat-dots"></i>
+                    </a>
+                    
+                    <!-- Wishlist -->
+                    <a asp-controller="Wishlist" asp-action="Index" class="nav-icon-btn text-decoration-none d-none d-lg-flex position-relative" title="Yêu thích">
+                        <i class="bi bi-heart"></i>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <span class="wishlist-badge">0</span>
+                        }
+                    </a>
+                    
+                    <!-- Notifications -->
+                    <a href="#" class="nav-icon-btn text-decoration-none d-none d-lg-flex position-relative" title="Thông báo">
+                        <i class="bi bi-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </a>
+                    
+                    <!-- Cart -->
+                    <a asp-controller="Cart" asp-action="Index" class="nav-icon-btn text-decoration-none d-none d-lg-flex position-relative" title="Giỏ hàng">
+                        <i class="bi bi-cart3"></i>
+                        <span class="cart-badge">0</span>
+                    </a>
+
+                    <div class="vr d-none d-lg-block mx-2" style="height: 30px;"></div>
+                    
+                    <partial name="_LoginPartial" />
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="dropdown me-2">
+                            <button class="btn btn-outline-danger dropdown-toggle" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-speedometer2"></i> Quản trị
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="bi bi-graph-up"></i> Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index"><i class="bi bi-people"></i> Người dùng</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index"><i class="bi bi-box-seam"></i> Sản phẩm</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index"><i class="bi bi-tags"></i> Danh mục</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Order" asp-action="Index"><i class="bi bi-cart"></i> Đơn hàng</a></li>
+                                <li><a class="dropdown-item" asp-area="Admin" asp-controller="Seller" asp-action="Index"><i class="bi bi-shop"></i> Người bán</a></li>
+                            </ul>
+                        </div>
+                    }
+
+                    <a asp-area="Seller" asp-controller="Dashboard" asp-action="Index" class="btn btn-post-ad">
+                        <i class="bi bi-pencil-square"></i> ĐĂNG TIN
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-3">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+
+
+    <!-- App Download Banner Removed -->
+
+    <footer class="bg-white pt-5 pb-3 border-top">
+        <div class="container">
+            <div class="row">
+                <!-- Column 1: Customer Support -->
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Hỗ trợ khách hàng</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Trung tâm trợ giúp</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">An toàn mua bán</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Quy định cần biết</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Quy chế quyền riêng tư</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Liên hệ hỗ trợ</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 2: About -->
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Về MegaMall</h6>
+                    <ul class="list-unstyled small text-muted">
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Giới thiệu</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Quy chế hoạt động sàn</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Chính sách bảo mật</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Giải quyết tranh chấp</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Tuyển dụng</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Truyền thông</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Blog</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Connect -->
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Liên kết</h6>
+                    <div class="d-flex gap-3 mb-3">
+                        <a href="#" class="text-primary fs-4"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-danger fs-4"><i class="bi bi-youtube"></i></a>
+                        <a href="#" class="text-primary fs-4"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="row small text-muted align-items-center">
+                <div class="col-md-9">
+                    <p class="mb-1">CÔNG TY TNHH MEGAMALL - Người đại diện theo pháp luật: Nguyễn Văn A; GPDKKD: 0312120782 do Sở KH & ĐT TP.HCM cấp ngày 11/01/2013;</p>
+                    <p class="mb-1">GPMXH: 185/GP-BTTTT do Bộ Thông tin và Truyền thông cấp ngày 09/07/2024 - Chịu trách nhiệm nội dung: Trần Hoàng Ly. <a href="#" class="text-decoration-none">Chính sách sử dụng</a></p>
+                    <p class="mb-1">Địa chỉ: Tầng 18, Toà nhà UOA, Số 6 đường Tân Trào, Phường Tân Mỹ, Thành phố Hồ Chí Minh, Việt Nam; Email: support@megamall.vn - Tổng đài CSKH: 19003003 (1.000đ/phút)</p>
+                </div>
+                <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                    <img src="https://static.chotot.com/storage/default/certificate.webp" alt="Bo Cong Thuong" width="120">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Live Widget -->
+    <div class="position-fixed bottom-0 end-0 mb-5 me-3" style="z-index: 1040; bottom: 90px !important;">
+        <a href="#">
+            <img src="https://static.chotot.com/storage/default/live_widget.png" alt="Live Phong Tro" width="100" onerror="this.style.display='none'">
+            <!-- Fallback if image fails -->
+            <div class="bg-danger text-white fw-bold p-2 rounded shadow text-center" style="width: 100px; display: none;" id="live-fallback">
+                LIVE<br>PHÒNG TRỌ
+            </div>
+        </a>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/notification.js" asp-append-version="true"></script>
+    <script src="~/js/chat.js" asp-append-version="true"></script>
+    
+    <script>
+        // Dark Mode Logic (Giữ nguyên nhưng đổi icon/text nếu cần)
+        const darkModeToggle = document.getElementById('darkModeToggle'); // Nút này có thể chưa có trong header mới, cần check lại nếu user muốn giữ
+        // ... (Logic dark mode cũ)
+
+        // Smart Search Logic
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('search-suggestions');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value;
+            
+            if (query.length < 2) {
+                suggestionsBox.classList.add('d-none');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/Search/Suggest?query=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        suggestionsBox.innerHTML = '';
+                        if (data.length > 0) {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.className = 'suggestion-item';
+                                div.innerHTML = `
+                                    <img src="${item.imageUrl}" alt="${item.name}">
+                                    <div>
+                                        <div class="fw-bold">${item.name}</div>
+                                        <div class="small text-danger">${item.price}</div>
+                                    </div>
+                                `;
+                                div.onclick = () => window.location.href = `/Product/Details/${item.id}`;
+                                suggestionsBox.appendChild(div);
+                            });
+                            suggestionsBox.classList.remove('d-none');
+                        } else {
+                            suggestionsBox.classList.add('d-none');
+                        }
+                    });
+            }, 300);
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.add('d-none');
+            }
+        });
+
+        // Voice Search
+        const voiceBtn = document.getElementById('voiceSearchBtn');
+        if (voiceBtn && 'webkitSpeechRecognition' in window) {
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'vi-VN'; // Chuyển sang tiếng Việt
+
+            voiceBtn.addEventListener('click', () => {
+                recognition.start();
+                voiceBtn.classList.add('text-danger');
+            });
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                searchInput.value = text;
+                searchInput.dispatchEvent(new Event('input'));
+                voiceBtn.classList.remove('text-danger');
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('text-danger');
+            };
+        } else {
+            voiceBtn.style.display = 'none';
+        }
+    </script>
+
+    <!-- Gemini Flash 2.5 Support Widget -->
+    <div id="gemini-support-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <!-- Chat Button -->
+        <button id="gemini-toggle-btn" class="btn btn-warning rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; transition: transform 0.3s;">
+            <i class="bi bi-chat-dots-fill fs-3 text-dark"></i>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="gemini-chat-window" class="card shadow-lg d-none" style="position: absolute; bottom: 80px; right: 0; width: 350px; height: 500px; border-radius: 15px; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-stars"></i>
+                    <h6 class="mb-0 fw-bold">Hỗ trợ khách hàng (MegaMall AI)</h6>
+                </div>
+                <button id="gemini-close-btn" class="btn btn-sm btn-link text-dark p-0"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="card-body bg-light overflow-auto p-3" id="gemini-chat-messages" style="flex: 1;">
+                <div class="d-flex flex-column gap-2">
+                    <div class="align-self-start bg-white p-2 rounded shadow-sm" style="max-width: 80%;">
+                        <small class="d-block text-muted mb-1" style="font-size: 0.7rem;">MegaMall AI</small>
+                        <span>Xin chào! Tôi là trợ lý ảo MegaMall AI. Tôi có thể giúp gì cho bạn?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white p-2 border-top">
+                <div class="input-group">
+                    <input type="text" id="gemini-chat-input" class="form-control border-0" placeholder="Nhập tin nhắn..." autocomplete="off">
+                    <button id="gemini-send-btn" class="btn btn-warning rounded-circle ms-2" style="width: 40px; height: 40px;"><i class="bi bi-send-fill text-dark"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const widget = document.getElementById('gemini-support-widget');
+            const toggleBtn = document.getElementById('gemini-toggle-btn');
+            const chatWindow = document.getElementById('gemini-chat-window');
+            const closeBtn = document.getElementById('gemini-close-btn');
+            const sendBtn = document.getElementById('gemini-send-btn');
+            const input = document.getElementById('gemini-chat-input');
+            const messagesContainer = document.getElementById('gemini-chat-messages');
+
+            // Check if all elements exist
+            if (!toggleBtn || !chatWindow || !closeBtn || !sendBtn || !input || !messagesContainer) {
+                console.warn('Gemini chat elements not found on this page');
+                return;
+            }
+
+            // Toggle Chat
+            toggleBtn.addEventListener('click', () => {
+                chatWindow.classList.toggle('d-none');
+                if (!chatWindow.classList.contains('d-none')) {
+                    input.focus();
+                }
+            });
+
+            closeBtn.addEventListener('click', () => {
+                chatWindow.classList.add('d-none');
+            });
+
+            // Send Message
+            async function sendMessage() {
+                const message = input.value.trim();
+                if (!message) return;
+
+                // Add User Message
+                appendMessage(message, 'user');
+                input.value = '';
+
+                // Show Loading
+                const loadingId = appendLoading();
+
+                try {
+                    const response = await fetch('/Support/Chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message: message })
+                    });
+
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const data = await response.json();
+                    removeLoading(loadingId);
+                    appendMessage(data.response, 'bot');
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    removeLoading(loadingId);
+                    appendMessage('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau.', 'bot');
+                }
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            function appendMessage(text, sender) {
+                const div = document.createElement('div');
+                const isUser = sender === 'user';
+                div.className = `align-self-${isUser ? 'end' : 'start'} ${isUser ? 'bg-warning text-dark' : 'bg-white text-dark'} p-2 rounded shadow-sm`;
+                div.style.maxWidth = '80%';
+                
+                let content = '';
+                if (!isUser) {
+                    content += `<small class="d-block text-muted mb-1" style="font-size: 0.7rem;">MegaMall AI</small>`;
+                }
+                content += `<span>${text}</span>`;
+                
+                div.innerHTML = content;
+                
+                // Wrap in a flex container for spacing
+                const wrapper = document.createElement('div');
+                wrapper.className = 'd-flex flex-column gap-2 mb-2';
+                wrapper.appendChild(div);
+                
+                messagesContainer.appendChild(wrapper);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            function appendLoading() {
+                const id = 'loading-' + Date.now();
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'align-self-start bg-white p-2 rounded shadow-sm mb-2';
+                div.style.maxWidth = '80%';
+                div.innerHTML = '<small class="d-block text-muted mb-1" style="font-size: 0.7rem;">MegaMall AI</small><div class="spinner-border spinner-border-sm text-warning" role="status"><span class="visually-hidden">Loading...</span></div>';
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'd-flex flex-column gap-2';
+                wrapper.appendChild(div);
+
+                messagesContainer.appendChild(wrapper);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                return id;
+            }
+
+            function removeLoading(id) {
+                const el = document.getElementById(id);
+                if (el) el.parentElement.remove();
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,76 @@
+@using MegaMall.Domain.Enums
+@model IEnumerable<MegaMall.Areas.Seller.Controllers.SellerOrderViewModel>
+
+@{
+    ViewData["Title"] = "Manage Orders";
+}
+
+<div class="container-fluid">
+    <h2 class="mb-4">Manage Orders</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You have no orders yet.</div>
+    }
+    else
+    {
+        <div class="accordion" id="ordersAccordion">
+            @foreach (var group in Model)
+            {
+                var order = group.Order;
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading-@order.Id">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@order.Id">
+                            Order #@order.Id - @order.OrderDate.ToString("g") - Customer: @order.ShippingAddress
+                        </button>
+                    </h2>
+                    <div id="collapse-@order.Id" class="accordion-collapse collapse" data-bs-parent="#ordersAccordion">
+                        <div class="accordion-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in group.Items)
+                                    {
+                                        <tr>
+                                            <td>@item.ProductName</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@item.UnitPrice.ToString("N0") đ</td>
+                                            <td>
+                                                <span class="badge bg-secondary">@item.Status</span>
+                                            </td>
+                                            <td>
+                                                @if (item.Status != OrderStatus.Delivered && item.Status != OrderStatus.Cancelled)
+                                                {
+                                                    <form asp-action="UpdateStatus" method="post" class="d-inline">
+                                                        <input type="hidden" name="orderItemId" value="@item.Id" />
+                                                        <div class="input-group input-group-sm">
+                                                            <select name="newStatus" class="form-select">
+                                                                @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
+                                                                {
+                                                                    <option value="@status">@status</option>
+                                                                }
+                                                            </select>
+                                                            <button type="submit" class="btn btn-primary">Update</button>
+                                                        </div>
+                                                    </form>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
