@@ -22,10 +22,10 @@ namespace MegaMall.ViewModels
         public string PhoneNumber { get; set; }
 
         [Display(Name = "Note")]
-        public string Note { get; set; }
+        public string? Note { get; set; }
 
         [Display(Name = "Coupon Code")]
-        public string CouponCode { get; set; }
+        public string? CouponCode { get; set; }
 
         public decimal DiscountAmount { get; set; }
 
