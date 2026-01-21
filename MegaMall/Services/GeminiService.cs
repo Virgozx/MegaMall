@@ -39,16 +39,36 @@ namespace MegaMall.Services
 
             try
             {
-                var endpoint = $"https://generativelanguage.googleapis.com/v1beta2/models/{_model}:generateText";
+                // Correct endpoint for Gemini models (v1beta/generateContent)
+                // Use key in query param for easier access, but header is also supported if configured right.
+                // However, the standard REST API usually expects key in query param unless using specialised client libs.
+                // Let's use the query param approach which is most robust for HttpClient.
+                var endpoint = $"https://generativelanguage.googleapis.com/v1beta/models/{_model}:generateContent?key={_apiKey}";
+                
                 var requestObj = new
                 {
-                    prompt = new { text = prompt },
-                    maxOutputTokens = maxTokens,
-                    temperature = temperature
+                    contents = new[] 
+                    { 
+                        new 
+                        { 
+                            parts = new[] 
+                            { 
+                                new { text = prompt } 
+                            } 
+                        } 
+                    },
+                    generationConfig = new 
+                    {
+                        maxOutputTokens = maxTokens,
+                        temperature = temperature
+                    }
                 };
 
                 var json = JsonSerializer.Serialize(requestObj);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // Clear Authorization header if we use query param to avoid conflicts
+                _http.DefaultRequestHeaders.Authorization = null;
 
                 var res = await _http.PostAsync(endpoint, content);
                 var resText = await res.Content.ReadAsStringAsync();
@@ -58,41 +78,22 @@ namespace MegaMall.Services
                     _logger.LogWarning("Gemini API call failed: {Status} {Body}", res.StatusCode, resText);
                     return null;
                 }
-
+                
                 using var doc = JsonDocument.Parse(resText);
-                // Try to read candidates/outputs per API shape
                 if (doc.RootElement.TryGetProperty("candidates", out var candidates) && candidates.GetArrayLength() > 0)
                 {
-                    var first = candidates[0];
-                    if (first.TryGetProperty("output", out var output))
+                    var firstCandidate = candidates[0];
+                    if (firstCandidate.TryGetProperty("content", out var cContent) && 
+                        cContent.TryGetProperty("parts", out var parts) && 
+                        parts.GetArrayLength() > 0)
                     {
-                        return output.GetString();
+                        return parts[0].GetProperty("text").GetString();
                     }
-                    if (first.TryGetProperty("content", out var contentProp))
-                    {
-                        // join text pieces
-                        if (contentProp.ValueKind == JsonValueKind.Array && contentProp.GetArrayLength() > 0)
-                        {
-                            var sb = new StringBuilder();
-                            foreach (var item in contentProp.EnumerateArray())
-                            {
-                                if (item.TryGetProperty("text", out var t)) sb.Append(t.GetString());
-                            }
-                            return sb.ToString();
-                        }
-                        return contentProp.GetString();
-                    }
-                }
-
-                // Fallback: try "candidates[0].output" or top-level "output"
-                if (doc.RootElement.TryGetProperty("result", out var resultEl))
-                {
-                    if (resultEl.TryGetProperty("output", out var out2)) return out2.GetString();
                 }
 
                 return null;
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, "Error calling Gemini API");
                 return null;
