@@ -501,9 +501,8 @@
 <script>
     // Auto show voucher splash on page load
     document.addEventListener('DOMContentLoaded', function() {
-        // Check if splash was already shown in this session
-        // Note: Commented out for testing purposes so you can see the modal on refresh
-        // if (!sessionStorage.getItem('voucherSplashShown')) {
+        // Check if splash was already shown
+        if (!sessionStorage.getItem('voucherSplashShown')) {
             setTimeout(function() {
                 var modal = document.getElementById('voucherSplashModal');
                 if (modal) {
@@ -511,7 +510,7 @@
                     document.body.style.overflow = 'hidden';
                 }
             }, 500); // Show after 500ms
-        // }
+        }
     });
 
     function closeVoucherSplash() {

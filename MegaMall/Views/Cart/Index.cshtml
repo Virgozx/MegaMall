@@ -1,16 +1,16 @@
 @model List<MegaMall.ViewModels.CartItemViewModel>
 
 @{
-    ViewData["Title"] = "Shopping Cart";
+    ViewData["Title"] = "Giỏ Hàng";
 }
 
 <div class="container mt-5">
-    <h1>Shopping Cart</h1>
+    <h1>Giỏ Hàng</h1>
 
     @if (!Model.Any())
     {
         <div class="alert alert-info">
-            Your cart is empty. <a asp-controller="Home" asp-action="Index">Continue Shopping</a>
+            Giỏ hàng của bạn đang trống. <a asp-controller="Home" asp-action="Index">Tiếp tục mua sắm</a>
         </div>
     }
     else
@@ -20,10 +20,10 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Product</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
+                            <th>Sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -56,13 +56,13 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Order Summary</h5>
+                        <h5 class="card-title">Tóm tắt đơn hàng</h5>
                         <hr />
                         <div class="d-flex justify-content-between mb-3">
-                            <span>Total:</span>
+                            <span>Tổng cộng:</span>
                             <strong class="text-danger">@Model.Sum(x => x.Total).ToString("N0") đ</strong>
                         </div>
-                        <a asp-action="Checkout" class="btn btn-primary w-100">Proceed to Checkout</a>
+                        <a asp-action="Checkout" class="btn btn-primary w-100">Tiến hành thanh toán</a>
                     </div>
                 </div>
             </div>

@@ -64,7 +64,7 @@
             font-size: 12px;
             color: #6c757d;
         }
-        @media (max-width: 768px) {
+        @@media (max-width: 768px) {
             .qr-section {
                 border-right: none;
                 border-bottom: 1px solid #dee2e6;
@@ -121,10 +121,6 @@
                     <div class="mb-4">
                         <label class="text-muted small">Số tiền thanh toán</label>
                         <div class="amount-display">@(((decimal)amount).ToString("N0")) VND</div>
-                    </div>
-                    
-                    <div class="alert alert-warning small">
-                        <i class="bi bi-exclamation-triangle-fill"></i> Đây là môi trường Demo. Bạn có thể chọn kết quả giao dịch bên dưới.
                     </div>
                     
                     <div class="d-grid gap-2">

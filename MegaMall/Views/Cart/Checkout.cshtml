@@ -2,11 +2,11 @@
 @using MegaMall.Domain.Enums
 
 @{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Thanh toán";
 }
 
 <div class="container mt-4">
-    <h2>Checkout</h2>
+    <h2>Thanh toán</h2>
     
     @if (TempData["Error"] != null)
     {
@@ -24,80 +24,90 @@
 
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Shipping Information</h4>
+                        <h4>Thông tin giao hàng</h4>
                     </div>
                     <div class="card-body">
                         <div class="mb-3">
-                            <label asp-for="FullName" class="form-label"></label>
-                            <input asp-for="FullName" class="form-control" />
+                            <label asp-for="FullName" class="form-label">Họ và tên</label>
+                            <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên người nhận" />
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            <label asp-for="PhoneNumber" class="form-label"></label>
-                            <input asp-for="PhoneNumber" class="form-control" />
+                            <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại liên hệ" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            <label asp-for="Address" class="form-label"></label>
-                            <input asp-for="Address" class="form-control" />
+                            <label asp-for="Address" class="form-label">Địa chỉ</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                <input asp-for="Address" class="form-control" placeholder="Nhập địa chỉ hoặc chọn trên bản đồ" />
+                            </div>
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
+
+                        <!-- Map Selection -->
                         <div class="mb-3">
-                            <label asp-for="City" class="form-label"></label>
-                            <input asp-for="City" class="form-control" />
+                            <label class="form-label small text-muted"><i class="bi bi-map"></i> Chọn vị trí trên bản đồ (Google Street Map style)</label>
+                            <div id="map" style="height: 300px; width: 100%; border-radius: 8px; border: 1px solid #dee2e6;"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="City" class="form-label">Thành phố/Tỉnh</label>
+                            <input asp-for="City" class="form-control" placeholder="Nhập thành phố" />
                             <span asp-validation-for="City" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            <label asp-for="Note" class="form-label"></label>
-                            <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+                            <label asp-for="Note" class="form-label">Ghi chú (Tùy chọn)</label>
+                            <textarea asp-for="Note" class="form-control" rows="3" placeholder="Lời nhắn cho người bán hoặc đơn vị vận chuyển"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h4>Payment Method</h4>
+                        <h4>Phương thức thanh toán</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethod.COD)" id="paymentCOD" checked>
                             <label class="form-check-label" for="paymentCOD">
-                                Cash On Delivery (COD)
+                                Thanh toán khi nhận hàng (COD)
                             </label>
                         </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethod.BankTransfer)" id="paymentBank">
                             <label class="form-check-label" for="paymentBank">
-                                Bank Transfer
+                                Chuyển khoản ngân hàng
                             </label>
                         </div>
                         <div class="form-check mb-2">
                             <input class="form-check-input" type="radio" asp-for="PaymentMethod" value="@((int)PaymentMethod.CreditCard)" id="paymentCard">
                             <label class="form-check-label" for="paymentCard">
-                                Credit Card
+                                Thẻ tín dụng
                             </label>
                         </div>
                         
                         <!-- Credit Card Details (Hidden by default) -->
                         <div id="creditCardInfo" class="mt-3 p-3 bg-light border rounded" style="display:none;">
                             <div class="mb-3">
-                                <label asp-for="CardNumber" class="form-label"></label>
+                                <label asp-for="CardNumber" class="form-label">Số thẻ</label>
                                 <input asp-for="CardNumber" class="form-control" placeholder="0000 0000 0000 0000" />
                                 <span asp-validation-for="CardNumber" class="text-danger"></span>
                             </div>
                             <div class="mb-3">
-                                <label asp-for="CardHolderName" class="form-label"></label>
-                                <input asp-for="CardHolderName" class="form-control" placeholder="JOHN DOE" />
+                                <label asp-for="CardHolderName" class="form-label">Tên chủ thẻ</label>
+                                <input asp-for="CardHolderName" class="form-control" placeholder="NGUYEN VAN A" />
                                 <span asp-validation-for="CardHolderName" class="text-danger"></span>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label asp-for="ExpiryDate" class="form-label"></label>
+                                    <label asp-for="ExpiryDate" class="form-label">Ngày hết hạn</label>
                                     <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" />
                                     <span asp-validation-for="ExpiryDate" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label asp-for="CVV" class="form-label"></label>
+                                    <label asp-for="CVV" class="form-label">CVV</label>
                                     <input asp-for="CVV" class="form-control" placeholder="123" />
                                     <span asp-validation-for="CVV" class="text-danger"></span>
                                 </div>
@@ -108,14 +118,14 @@
                     </div>
                 </div>
                 
-                <button type="submit" class="btn btn-primary btn-lg w-100" onclick="console.log('Button clicked!'); return true;">Place Order</button>
+                <button type="submit" class="btn btn-primary btn-lg w-100" onclick="console.log('Button clicked!'); return true;">Đặt Hàng</button>
             </form>
         </div>
 
         <div class="col-md-4">
             <div class="card mb-4">
                 <div class="card-header">
-                    <h4>Order Summary</h4>
+                    <h4>Tóm tắt đơn hàng</h4>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush mb-3">
@@ -131,7 +141,7 @@
                         }
                         <li class="list-group-item d-flex justify-content-between bg-light">
                             <div class="text-success">
-                                <h6 class="my-0">Subtotal</h6>
+                                <h6 class="my-0">Tạm tính</h6>
                             </div>
                             <span class="text-success">@Model.TotalAmount.ToString("N0") đ</span>
                         </li>
@@ -142,7 +152,7 @@
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" asp-for="UseLoyaltyPoints" id="usePoints">
                                     <label class="form-check-label" for="usePoints">
-                                        Use @Model.AvailablePoints Points (Max 50%)
+                                        Dùng @Model.AvailablePoints điểm (Tối đa 50%)
                                     </label>
                                 </div>
                                 <span class="text-success" id="pointsDiscountDisplay">-0 đ</span>
@@ -153,14 +163,14 @@
                         {
                             <li class="list-group-item d-flex justify-content-between bg-light">
                                 <div class="text-success">
-                                    <h6 class="my-0">Discount (@Model.CouponCode)</h6>
+                                    <h6 class="my-0">Giảm giá (@Model.CouponCode)</h6>
                                 </div>
                                 <span class="text-success">-@Model.DiscountAmount.ToString("N0") đ</span>
                             </li>
                         }
 
                         <li class="list-group-item d-flex justify-content-between">
-                            <span>Total (VND)</span>
+                            <span>Tổng cộng</span>
                             <strong>@Model.FinalAmount.ToString("N0") đ</strong>
                         </li>
                     </ul>
@@ -273,5 +283,79 @@
             messageDiv.addClass('text-' + type);
             messageDiv.text(message);
         }
+    </script>
+
+    <!-- Leaflet Map Integration -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Default: Ho Chi Minh City
+            var initialLat = 10.7721;
+            var initialLng = 106.6983;
+
+            var map = L.map('map').setView([initialLat, initialLng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = L.marker([initialLat, initialLng], {draggable: true}).addTo(map);
+
+            // Handle drag end
+            marker.on('dragend', function(event){
+                var marker = event.target;
+                var position = marker.getLatLng();
+                updateAddressFromCoordinates(position.lat, position.lng);
+            });
+
+            // Handle map click
+            map.on('click', function(e) {
+                var lat = e.latlng.lat;
+                var lng = e.latlng.lng;
+
+                marker.setLatLng([lat, lng]);
+                updateAddressFromCoordinates(lat, lng);
+            });
+            
+            // Try to geolocate user
+            map.locate({setView: true, maxZoom: 16});
+
+            map.on('locationfound', function(e) {
+                marker.setLatLng(e.latlng);
+                // Optional: Auto-fill address on load? Maybe better to let user choose.
+            });
+
+            function updateAddressFromCoordinates(lat, lng) {
+                // Visual feedback
+                var addrInput = document.getElementById('Address');
+                var currentVal = addrInput.value;
+                addrInput.value = "Đang cập nhật vị trí...";
+                
+                // Using Nominatim API
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.address) {
+                            var house_number = data.address.house_number || "";
+                            var road = data.address.road || "";
+                            var suburb = data.address.suburb || data.address.quarter || "";
+                            var city_val = data.address.city || data.address.town || data.address.state || "";
+                            
+                            var constructedAddr = [house_number, road, suburb].filter(Boolean).join(", ");
+                            if(constructedAddr.length < 5) constructedAddr = data.display_name.split(',').slice(0,3).join(',');
+
+                            document.getElementById('Address').value = constructedAddr;
+                            document.getElementById('City').value = city_val;
+                        } else {
+                            addrInput.value = currentVal; // Revert if failed
+                        }
+                    })
+                    .catch(err => {
+                        console.log('Geocoding error:', err);
+                        addrInput.value = currentVal;
+                    });
+            }
+        });
     </script>
 }

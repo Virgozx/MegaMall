@@ -2,8 +2,8 @@
     var activePage = ViewData["ActivePage"] as string;
 }
 <div class="list-group">
-    <a asp-action="Index" class="list-group-item list-group-item-action @(activePage == "Profile" ? "active" : "")">Profile</a>
-    <a asp-action="Addresses" class="list-group-item list-group-item-action @(activePage == "Addresses" ? "active" : "")">Address Book</a>
-    <a asp-controller="Order" asp-action="Index" class="list-group-item list-group-item-action">My Orders</a>
-    <a asp-controller="Wishlist" asp-action="Index" class="list-group-item list-group-item-action">Wishlist</a>
+    <a asp-action="Index" class="list-group-item list-group-item-action @(activePage == "Profile" ? "active" : "")">Thông tin tài khoản</a>
+    <a asp-action="Addresses" class="list-group-item list-group-item-action @(activePage == "Addresses" ? "active" : "")">Sổ địa chỉ</a>
+    <a asp-controller="Order" asp-action="Index" class="list-group-item list-group-item-action">Đơn hàng của tôi</a>
+    <a asp-controller="Wishlist" asp-action="Index" class="list-group-item list-group-item-action">Sản phẩm yêu thích</a>
 </div>

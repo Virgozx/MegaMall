@@ -1,6 +1,6 @@
 @model IEnumerable<MegaMall.Domain.Entities.UserAddress>
 @{
-    ViewData["Title"] = "Address Book";
+    ViewData["Title"] = "Sổ địa chỉ";
     ViewData["ActivePage"] = "Addresses";
 }
 
@@ -11,13 +11,13 @@
         </div>
         <div class="col-md-9">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Address Book</h3>
-                <a asp-action="AddAddress" class="btn btn-success">Add New Address</a>
+                <h3>Sổ địa chỉ</h3>
+                <a asp-action="AddAddress" class="btn btn-success">Thêm địa chỉ mới</a>
             </div>
             
             @if (!Model.Any())
             {
-                <p>No additional addresses saved.</p>
+                <p>Chưa có địa chỉ nào được lưu.</p>
             }
             else
             {
