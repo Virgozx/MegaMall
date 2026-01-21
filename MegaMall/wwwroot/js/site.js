@@ -1,4 +1,4 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
@@ -6,29 +6,29 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Location Data (Mock)
     const locationData = {
-        "Thái Nguyên": {
-            "TP Thái Nguyên": ["Phường Trưng Vương", "Phường Hoàng Văn Thụ", "Phường Phan Đình Phùng", "Phường Quang Trung"],
-            "TP Sông Công": ["Phường Mỏ Chè", "Phường Thắng Lợi", "Phường Cải Đan"],
-            "Huyện Đại Từ": ["Thị trấn Hùng Sơn", "Xã Hà Thượng", "Xã Tân Thái"]
+        "Th�i Nguy�n": {
+            "TP Th�i Nguy�n": ["Phu?ng Trung Vuong", "Phu?ng Ho�ng Van Th?", "Phu?ng Phan ��nh Ph�ng", "Phu?ng Quang Trung"],
+            "TP S�ng C�ng": ["Phu?ng M? Ch�", "Phu?ng Th?ng L?i", "Phu?ng C?i �an"],
+            "Huy?n �?i T?": ["Th? tr?n H�ng Son", "X� H� Thu?ng", "X� T�n Th�i"]
         },
-        "Hà Nội": {
-            "Quận Ba Đình": ["Phường Phúc Xá", "Phường Trúc Bạch", "Phường Vĩnh Phúc"],
-            "Quận Hoàn Kiếm": ["Phường Phúc Tân", "Phường Đồng Xuân", "Phường Hàng Mã"],
-            "Quận Cầu Giấy": ["Phường Dịch Vọng", "Phường Mai Dịch", "Phường Nghĩa Đô"]
+        "H� N?i": {
+            "Qu?n Ba ��nh": ["Phu?ng Ph�c X�", "Phu?ng Tr�c B?ch", "Phu?ng Vinh Ph�c"],
+            "Qu?n Ho�n Ki?m": ["Phu?ng Ph�c T�n", "Phu?ng �?ng Xu�n", "Phu?ng H�ng M�"],
+            "Qu?n C?u Gi?y": ["Phu?ng D?ch V?ng", "Phu?ng Mai D?ch", "Phu?ng Nghia ��"]
         },
-        "Tp Hồ Chí Minh": {
-            "Quận 1": ["Phường Bến Nghé", "Phường Bến Thành", "Phường Cô Giang"],
-            "Quận 3": ["Phường Võ Thị Sáu", "Phường 1", "Phường 2"],
-            "TP Thủ Đức": ["Phường Thảo Điền", "Phường An Phú", "Phường Bình Chiểu"]
+        "Tp H? Ch� Minh": {
+            "Qu?n 1": ["Phu?ng B?n Ngh�", "Phu?ng B?n Th�nh", "Phu?ng C� Giang"],
+            "Qu?n 3": ["Phu?ng V� Th? S�u", "Phu?ng 1", "Phu?ng 2"],
+            "TP Th? �?c": ["Phu?ng Th?o �i?n", "Phu?ng An Ph�", "Phu?ng B�nh Chi?u"]
         },
-        "Đà Nẵng": {
-            "Quận Hải Châu": ["Phường Hải Châu 1", "Phường Hải Châu 2"],
-            "Quận Thanh Khê": ["Phường Thanh Khê Tây", "Phường Thanh Khê Đông"]
+        "�� N?ng": {
+            "Qu?n H?i Ch�u": ["Phu?ng H?i Ch�u 1", "Phu?ng H?i Ch�u 2"],
+            "Qu?n Thanh Kh�": ["Phu?ng Thanh Kh� T�y", "Phu?ng Thanh Kh� ��ng"]
         }
     };
 
     // State
-    let currentProvince = "Thái Nguyên";
+    let currentProvince = "Th�i Nguy�n";
     let currentDistrict = "";
     let currentWard = "";
     let selectionMode = ""; // 'province', 'district', 'ward'
@@ -97,13 +97,13 @@ document.addEventListener('DOMContentLoaded', function() {
             lblDistrict.classList.remove('d-none');
             lblDistrictTitle.classList.add('fw-bold');
             lblDistrictTitle.classList.remove('text-muted');
-            lblDistrictTitle.innerText = "Quận/Huyện";
+            lblDistrictTitle.innerText = "Qu?n/Huy?n";
         } else {
             lblDistrict.innerText = "";
             lblDistrict.classList.add('d-none');
             lblDistrictTitle.classList.remove('fw-bold');
             lblDistrictTitle.classList.add('text-muted');
-            lblDistrictTitle.innerText = "Chọn quận huyện";
+            lblDistrictTitle.innerText = "Ch?n qu?n huy?n";
         }
 
         // Ward
@@ -112,13 +112,13 @@ document.addEventListener('DOMContentLoaded', function() {
             lblWard.classList.remove('d-none');
             lblWardTitle.classList.add('fw-bold');
             lblWardTitle.classList.remove('text-muted');
-            lblWardTitle.innerText = "Phường/Xã";
+            lblWardTitle.innerText = "Phu?ng/X�";
         } else {
             lblWard.innerText = "";
             lblWard.classList.add('d-none');
             lblWardTitle.classList.remove('fw-bold');
             lblWardTitle.classList.add('text-muted');
-            lblWardTitle.innerText = "Chọn phường xã";
+            lblWardTitle.innerText = "Ch?n phu?ng x�";
         }
 
         // Enable/Disable buttons
@@ -146,21 +146,21 @@ document.addEventListener('DOMContentLoaded', function() {
     btnProvince.addEventListener('click', (e) => {
         e.stopPropagation(); // Prevent dropdown close
         const provinces = Object.keys(locationData);
-        showList('province', 'Chọn Tỉnh/Thành', provinces);
+        showList('province', 'Ch?n T?nh/Th�nh', provinces);
     });
 
     btnDistrict.addEventListener('click', (e) => {
         e.stopPropagation();
         if (!currentProvince) return;
         const districts = Object.keys(locationData[currentProvince] || {});
-        showList('district', 'Chọn Quận/Huyện', districts);
+        showList('district', 'Ch?n Qu?n/Huy?n', districts);
     });
 
     btnWard.addEventListener('click', (e) => {
         e.stopPropagation();
         if (!currentDistrict) return;
         const wards = locationData[currentProvince][currentDistrict] || [];
-        showList('ward', 'Chọn Phường/Xã', wards);
+        showList('ward', 'Ch?n Phu?ng/X�', wards);
     });
 
     btnBack.addEventListener('click', (e) => {
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Apply
     btnApply.addEventListener('click', () => {
-        let text = currentProvince || "Toàn quốc";
+        let text = currentProvince || "To�n qu?c";
         
         // Shorten for display
         if (currentWard) text = currentWard;
@@ -268,12 +268,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateWishlistCount();
                 } else {
                     console.error('Toggle failed:', data.message);
-                    alert(data.message || 'Có lỗi xảy ra khi thêm vào wishlist');
+                    alert(data.message || 'C� l?i x?y ra khi th�m v�o wishlist');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Có lỗi xảy ra. Vui lòng thử lại sau.');
+                alert('C� l?i x?y ra. Vui l�ng th? l?i sau.');
             });
         }
     });
@@ -407,3 +407,116 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+/* Notification Logic */
+
+/* Notification Logic */
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const notificationCount = document.getElementById('notificationCount');
+    const notificationList = document.getElementById('notificationList');
+
+    if (!notificationDropdown || !notificationCount || !notificationList) return;
+
+    function getStatusBadge(status) {
+        switch(status) {
+            case 'PendingPayment': return '<span class="badge bg-warning text-dark">Chờ thanh toán</span>';
+            case 'Paid': return '<span class="badge bg-info">Đã thanh toán</span>';
+            case 'Processing': return '<span class="badge bg-primary">Đang xử lý</span>';
+            case 'Shipped': return '<span class="badge bg-info">Đang giao</span>';
+            case 'Delivered': return '<span class="badge bg-success">Đã giao</span>';
+            case 'Cancelled': return '<span class="badge bg-danger">Đã hủy</span>';
+            case 'Refunded': return '<span class="badge bg-secondary">Hoàn tiền</span>'; 
+            default: return '<span class="badge bg-secondary">' + status + '</span>';
+        }
+    }
+
+    function fetchNotifications() {
+        fetch('/Order/GetOrderNotifications')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.count > 0) {
+                    notificationCount.textContent = data.count > 99 ? '99+' : data.count;
+                    notificationCount.style.display = 'flex';
+                } else {
+                    notificationCount.style.display = 'none';
+                }
+
+                if (data.orders && data.orders.length > 0) {
+                    let html = '';
+                    data.orders.forEach(order => {
+                        html += `<a href="/Order/Details/${order.id}" class="list-group-item list-group-item-action p-3">
+                            <div class="d-flex w-100 justify-content-between mb-1">
+                                <strong class="text-truncate" style="max-width: 150px;">Đơn hàng #${order.id}</strong>
+                                <small class="text-muted">${order.orderDate}</small>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>${getStatusBadge(order.status)}</div>
+                                <small class="fw-bold text-primary">${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}</small>
+                            </div>
+                        </a>`;
+                    });
+                    notificationList.innerHTML = html;
+                } else {
+                    notificationList.innerHTML = `
+                        <div class="text-center p-4 text-muted">
+                            <i class="bi bi-inbox fs-2 mb-2 d-block"></i>
+                            <p class="mb-0 small">Bạn chưa có đơn hàng nào.</p>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+                notificationList.innerHTML = `
+                    <div class="text-center p-3 text-danger">
+                        <small>Không thể tải thông báo.</small>
+                    </div>
+                `;
+            });
+    }
+
+    fetchNotifications();
+
+    // Use Bootstrap event for dropdown
+    const dropdownInstance = document.getElementById('notificationDropdown');
+    if (dropdownInstance) {
+        dropdownInstance.addEventListener('show.bs.dropdown', function () {
+           fetchNotifications();
+        });
+    }
+});
+
+/* Wishlist Initialization */
+document.addEventListener('DOMContentLoaded', function() {
+    initWishlistButtons();
+});
+
+function initWishlistButtons() {
+    const wishlistButtons = document.querySelectorAll('.btn-wishlist');
+    if (wishlistButtons.length === 0) return;
+
+    fetch('/Wishlist/GetWishlistProductIds')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            const likedIds = new Set(data.productIds);
+            wishlistButtons.forEach(btn => {
+                const id = parseInt(btn.getAttribute('data-product-id'));
+                if (likedIds.has(id)) {
+                    btn.classList.add('active');
+                    const icon = btn.querySelector('i');
+                    if (icon) {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                    }
+                }
+            });
+        })
+        .catch(console.error);
+}
