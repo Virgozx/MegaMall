@@ -5,247 +5,100 @@ using MegaMall.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System;
+using MegaMall.Interfaces;
+using System.Text;
 
 namespace MegaMall.Controllers
 {
     public class SupportController : Controller
     {
         private readonly MallDbContext _context;
+        private readonly IAIService _aiService;
 
-        public SupportController(MallDbContext context)
+        public SupportController(MallDbContext context, IAIService aiService)
         {
             _context = context;
+            _aiService = aiService;
         }
 
         [HttpPost]
         public async Task<IActionResult> Chat([FromBody] ChatRequest request)
         {
-            // Simulate AI processing time
-            await Task.Delay(100); 
+            var msg = request.Message?.Trim() ?? "";
+            if (string.IsNullOrEmpty(msg)) return Json(new { response = "Bạn cần giúp gì không ạ?" });
 
-            var msg = request.Message?.ToLower() ?? "";
-            string response = "";
+            // 1. Search for relevant products to provide as context
+            var query = _context.Products
+                .Include(p => p.Variants)
+                .AsQueryable();
 
-            // Define allowed topics (only e-commerce related)
-            var allowedTopics = new[] {
-                // Greetings
-                "chào", "hello", "hi", "xin chào", "hey",
-                // Product related
-                "sản phẩm", "hàng", "mua", "có", "tìm", "giá", "bán", 
-                "điện thoại", "laptop", "máy tính", "tai nghe", "tivi", "đồng hồ",
-                "quần", "áo", "giày", "túi", "phụ kiện", "mỹ phẩm", "skincare",
-                "đồ gia dụng", "nội thất", "nhà cửa", "sách", "văn phòng phẩm",
-                "thể thao", "game", "đồ chơi", "em bé", "mẹ bầu", "điện máy",
-                "rẻ", "đắt", "khuyến mãi", "sale", "giảm giá", "mới", "cũ",
-                // E-commerce policies
-                "bảo hành", "giao hàng", "ship", "vận chuyển", "đổi trả", "hoàn tiền",
-                "thanh toán", "payment", "cod", "chuyển khoản", "ví điện tử",
-                "liên hệ", "hotline", "số điện thoại", "email", "hỗ trợ",
-                "đặt hàng", "order", "mua hàng", "giỏ hàng", "cart", "checkout",
-                "tài khoản", "đăng ký", "đăng nhập", "quên mật khẩu",
-                // Common words
-                "như thế nào", "bao lâu", "khi nào", "ở đâu", "nào", "không"
-            };
+            // Simple keyword search to filter context
+            var keywords = msg.ToLower().Split(new[] { ' ', '?', '!' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 2 && !new[] { "cái", "thì", "là", "của" }.Contains(w))
+                .Take(5) // limit keywords
+                .ToList();
 
-            // Off-topic keywords (questions not related to shopping)
-            var offTopicIndicators = new[] {
-                "thời tiết", "bóng đá", "world cup", "tin tức", "chính trị", "kinh tế vĩ mô",
-                "lịch sử", "địa lý", "toán học", "vật lý", "hóa học", "sinh học",
-                "nấu ăn", "công thức", "recipe", "du lịch", "khách sạn", "máy bay",
-                "âm nhạc", "ca sĩ", "diễn viên", "phim", "movie", "bài hát",
-                "tình yêu", "hẹn hò", "date", "relationship", "sức khỏe", "bệnh",
-                "luật pháp", "pháp luật", "thuế", "ngân hàng interest rate",
-                "chứng khoán", "bitcoin", "cryptocurrency", "forex",
-                "lập trình", "coding", "python", "java", "javascript",
-                "ai là", "who is", "khi nào sinh", "bao nhiêu tuổi",
-                "thủ đô", "dân số", "diện tích", "tổng thống", "thủ tướng"
-            };
-
-            // Check if question is off-topic
-            bool isOffTopic = offTopicIndicators.Any(k => msg.Contains(k));
+            if (keywords.Any())
+            {
+                // Simple search rank
+                query = query.Where(p => keywords.Any(k => p.Name.Contains(k) || (p.Description != null && p.Description.Contains(k))));
+            }
             
-            // If clearly off-topic, reject immediately
-            if (isOffTopic)
+            // Take top 5 relevant products
+            var relevantProducts = await query.Take(5).ToListAsync();
+            
+            // If no specific products found but query is generic, maybe take top 5 newest
+            if (!relevantProducts.Any() && (msg.Contains("sản phẩm") || msg.Contains("bán") || msg.Contains("mua")))
             {
-                response = "😅 <b>Xin lỗi, tôi không được hỗ trợ để trả lời câu hỏi này.</b><br><br>" +
-                          "Tôi là trợ lý ảo của <b style='color: #ff6b00;'>MegaMall</b> - chỉ chuyên hỗ trợ về:<br><br>" +
-                          "🛍️ <b>Sản phẩm & hàng hóa</b> có bán trên website<br>" +
-                          "💰 <b>Giá cả & khuyến mãi</b><br>" +
-                          "📦 <b>Đặt hàng, giao hàng, thanh toán</b><br>" +
-                          "🔄 <b>Chính sách bảo hành, đổi trả</b><br><br>" +
-                          "<i>Hãy hỏi tôi về các sản phẩm bạn muốn mua nhé! 😊</i>";
-                return Json(new { response = response });
+                relevantProducts = await _context.Products.Include(p => p.Variants).OrderByDescending(p => p.Id).Take(5).ToListAsync();
             }
 
-            // Check for specific policy/info keywords first
-            var policyKeywords = new[] { 
-                "bảo hành", "giao hàng", "ship", "vận chuyển", "đổi trả", "hoàn tiền",
-                "khuyến mãi", "sale", "giảm giá", "thanh toán", "payment", 
-                "liên hệ", "hotline", "số điện thoại", "email"
-            };
+            // 2. Build Context String for AI
+            var sb = new StringBuilder();
+            sb.AppendLine("You are MegaMall AI, a smart and friendly shopping assistant for a website called 'MegaMall'.");
+            sb.AppendLine("Your goal is to help users find products, answer questions about prices, and explain store policies.");
+            sb.AppendLine("Always answer in Vietnamese (Tiếng Việt). Use HTML formatting (<b>, <br>, <i>, <ul>, <li>) for clarity.");
+            sb.AppendLine("Do NOT mention you are an AI model from Google. Speak as the store staff.");
+            
+            sb.AppendLine("\n--- STORE POLICIES ---");
+            sb.AppendLine("- Delivery: 1-2 days inner city, 2-4 days others. Freeship for orders > 500k.");
+            sb.AppendLine("- Warranty: 12 months for electronics, 7 days return for errors.");
+            sb.AppendLine("- Payment: COD (Cash), VNPay, Bank Transfer.");
+            sb.AppendLine("- Support: Hotline 1900-3003.");
 
-            bool isPolicyQuestion = policyKeywords.Any(k => msg.Contains(k));
-            bool isGreeting = msg.Contains("chào") || msg.Contains("hello") || msg.Contains("hi") || msg.Contains("xin chào") || msg.Contains("hey");
-
-            // If asking about policy/info, handle those first
-            if (isGreeting)
+            sb.AppendLine("\n--- RELEVANT PRODUCTS IN STOCK ---");
+            if (relevantProducts.Any())
             {
-                // Will handle below
-            }
-            else if (!isPolicyQuestion)
-            {
-                // Try to search products for ANY query that's not a greeting or policy question
-                var query = _context.Products
-                    .Where(p => p.IsPublished && !p.IsDeleted)
-                    .Include(p => p.Variants)
-                    .AsQueryable();
-
-                // Extract meaningful words from the message (remove common words)
-                var commonWords = new[] { "có", "không", "gì", "thì", "sao", "như", "thế", "nào", "à", "ạ", "vậy", "đây", "kia", "này", "bao", "nhiêu" };
-                var words = msg.Split(new[] { ' ', ',', '.', '?', '!' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Where(w => w.Length > 2 && !commonWords.Contains(w))
-                    .ToList();
-
-                // Search by any word in the message
-                if (words.Any())
+                foreach (var p in relevantProducts)
                 {
-                    query = query.Where(p => 
-                        words.Any(word => 
-                            p.Name.ToLower().Contains(word) || 
-                            (p.Description != null && p.Description.ToLower().Contains(word))
-                        )
-                    );
+                    var price = p.Variants.Any() ? p.Variants.Min(v => v.Price).ToString("N0") : "Contact";
+                    sb.AppendLine($"- ID: {p.Id} | Name: {p.Name} | Price: from {price} VND | Desc: {p.Description?.Substring(0, Math.Min(100, p.Description?.Length ?? 0))}...");
                 }
-
-                // Sort logic based on keywords in message
-                if (msg.Contains("rẻ") || msg.Contains("giá thấp"))
-                {
-                    query = query.OrderBy(p => p.Variants.Min(v => v.Price));
-                }
-                else if (msg.Contains("đắt") || msg.Contains("giá cao") || msg.Contains("cao cấp"))
-                {
-                    query = query.OrderByDescending(p => p.Variants.Max(v => v.Price));
-                }
-                else if (msg.Contains("mới"))
-                {
-                    query = query.OrderByDescending(p => p.CreatedDate);
-                }
-                else
-                {
-                    query = query.OrderByDescending(p => p.CreatedDate);
-                }
-
-                var products = await query.Take(3).ToListAsync();
-
-                if (products.Any())
-                {
-                    var productList = products.Select(p => {
-                        var minPrice = p.Variants.Any() ? p.Variants.Min(v => v.Price) : 0;
-                        return $"<div style='margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;'>" +
-                               $"• <b><a href='/Product/Details/{p.Id}' target='_blank' style='color: #0066cc; text-decoration: none;'>{p.Name}</a></b>" +
-                               $"<br><span style='color: #ff6b00; font-weight: bold;'>Từ {minPrice:N0}đ</span></div>";
-                    });
-                    
-                    var moreText = products.Count < 3 ? "" : "<br><i style='font-size: 0.9em; color: #666;'>💡 Gõ từ khóa cụ thể hơn để tìm thêm sản phẩm khác nhé!</i>";
-                    response = $"✅ Chúng tôi có <b>{products.Count} sản phẩm</b> phù hợp:{string.Join("", productList)}{moreText}<br><br>Bạn có muốn xem chi tiết sản phẩm nào không?";
-                    return Json(new { response = response });
-                }
-                // If no products found but seems like product query
-                else if (words.Any())
-                {
-                    response = "😔 <b>Rất tiếc, hiện tại chúng tôi chưa có sản phẩm này.</b><br><br>" +
-                              "Bạn có thể:<br>" +
-                              "🔍 Thử tìm với từ khóa khác<br>" +
-                              "📧 Để lại thông tin, chúng tôi sẽ thông báo khi có hàng<br>" +
-                              "🛍️ <a href='/' style='color: #ff6b00;'>Xem các sản phẩm khác tại đây</a><br><br>" +
-                              "<i>Hoặc hỏi: \"Có những sản phẩm gì?\" để xem danh mục! 😊</i>";
-                    return Json(new { response = response });
-                }
-            }
-
-            // Handle greetings
-            if (isGreeting)
-            {
-                response = "👋 <b>Xin chào! Rất vui được hỗ trợ bạn!</b><br><br>" +
-                          "Tôi là <b style='color: #ff6b00;'>MegaMall AI</b> - trợ lý ảo thông minh. Tôi có thể giúp bạn:<br><br>" +
-                          "🔍 <b>Tìm kiếm sản phẩm</b><br>" +
-                          "💰 <b>Tư vấn giá cả & khuyến mãi</b><br>" +
-                          "🛒 <b>Hỗ trợ đặt hàng</b><br>" +
-                          "📋 <b>Giải đáp chính sách</b> (bảo hành, đổi trả, giao hàng)<br><br>" +
-                          "<i style='color: #666;'>Hãy hỏi tôi bất cứ điều gì về mua sắm tại MegaMall nhé! 💬</i>";
-            }
-            else if (msg.Contains("bảo hành"))
-            {
-                response = "✅ <b>Chính sách bảo hành tại MegaMall:</b><br><br>" +
-                          "• 📱 <b>Điện thoại, Laptop:</b> 12-24 tháng bảo hành chính hãng<br>" +
-                          "• 🎧 <b>Phụ kiện điện tử:</b> 6-12 tháng<br>" +
-                          "• 👕 <b>Thời trang:</b> Đổi size miễn phí trong 30 ngày<br>" +
-                          "• 🏠 <b>Đồ gia dụng:</b> Theo chính sách nhà sản xuất<br><br>" +
-                          "<i>💡 Lưu ý: Giữ hóa đơn và tem bảo hành để được hỗ trợ tốt nhất!</i>";
-            }
-            else if (msg.Contains("giao") || msg.Contains("ship") || msg.Contains("vận chuyển"))
-            {
-                response = "🚚 <b>Chính sách giao hàng MegaMall:</b><br><br>" +
-                          "• 🏙️ <b>Nội thành:</b> Giao trong 1-2 ngày<br>" +
-                          "• 🌆 <b>Ngoại thành:</b> Giao trong 2-4 ngày<br>" +
-                          "• 🎁 <b>Miễn phí ship:</b> Đơn hàng từ 500.000đ<br>" +
-                          "• 💵 <b>COD:</b> Thanh toán khi nhận hàng toàn quốc<br><br>" +
-                          "<i>📦 Đóng gói cẩn thận, bảo đảm hàng nguyên vẹn!</i>";
-            }
-            else if (msg.Contains("đổi") || msg.Contains("trả") || msg.Contains("hoàn"))
-            {
-                response = "🔄 <b>Chính sách đổi trả hàng:</b><br><br>" +
-                          "• ⏰ <b>Thời gian:</b> Đổi trả miễn phí trong 7 ngày<br>" +
-                          "• ✔️ <b>Điều kiện:</b> Sản phẩm còn nguyên tem, mác, hóa đơn<br>" +
-                          "• 💰 <b>Hoàn tiền:</b> 100% nếu lỗi nhà sản xuất<br>" +
-                          "• 🔧 <b>Bảo hành:</b> Sửa chữa hoặc đổi mới nếu có lỗi<br><br>" +
-                          "<i>📞 Liên hệ hotline để được hỗ trợ nhanh chóng!</i>";
-            }
-            else if (msg.Contains("khuyến mãi") || msg.Contains("sale") || msg.Contains("giảm giá"))
-            {
-                response = "🔥 <b>Khuyến mãi HOT hiện tại:</b><br><br>" +
-                          "• ⚡ <b>Flash Sale:</b> Mỗi ngày lúc 9h, 12h, 18h, 21h<br>" +
-                          "• 🎯 <b>Giảm giá:</b> Lên đến 50% nhiều sản phẩm<br>" +
-                          "• 🚚 <b>Freeship:</b> Miễn phí vận chuyển mọi đơn<br>" +
-                          "• 🎁 <b>Tích điểm:</b> Đổi quà, voucher hấp dẫn<br><br>" +
-                          "<a href='/' style='color: #ff6b00; font-weight: bold;'>👉 Xem ngay các deal hot!</a>";
-            }
-            else if (msg.Contains("thanh toán") || msg.Contains("payment"))
-            {
-                response = "💳 <b>Hỗ trợ các hình thức thanh toán:</b><br><br>" +
-                          "• 💵 <b>Tiền mặt (COD):</b> Thanh toán khi nhận hàng<br>" +
-                          "• 🏦 <b>Chuyển khoản:</b> Qua ngân hàng (có hướng dẫn)<br>" +
-                          "• 📱 <b>Ví điện tử:</b> MoMo, ZaloPay, VNPay<br>" +
-                          "• 💳 <b>Thẻ:</b> Visa, Mastercard, JCB<br><br>" +
-                          "<i>🔒 Giao dịch an toàn, bảo mật 100%!</i>";
-            }
-            else if (msg.Contains("liên hệ") || msg.Contains("hotline") || msg.Contains("số điện thoại"))
-            {
-                response = "📞 <b>Thông tin liên hệ MegaMall:</b><br><br>" +
-                          "• ☎️ <b>Hotline:</b> 1900-3003 (8h-22h hàng ngày)<br>" +
-                          "• 📧 <b>Email:</b> support@megamall.vn<br>" +
-                          "• 💬 <b>Chat:</b> Trực tuyến 24/7 (như bây giờ đây!)<br>" +
-                          "• 📍 <b>Địa chỉ:</b> Tầng 18, Toà UOA, Tân Trào, TP.HCM<br><br>" +
-                          "<i>Chúng tôi luôn sẵn sàng hỗ trợ bạn! 😊</i>";
             }
             else
             {
-                // If message is too vague or off-topic, reject politely
-                response = "😅 <b>Xin lỗi, tôi không được hỗ trợ để trả lời câu hỏi này.</b><br><br>" +
-                          "Tôi là trợ lý ảo của <b style='color: #ff6b00;'>MegaMall</b> - chỉ chuyên hỗ trợ về:<br><br>" +
-                          "🛍️ <b>Tìm kiếm & tư vấn sản phẩm</b><br>" +
-                          "💰 <b>Giá cả & khuyến mãi</b><br>" +
-                          "📦 <b>Đặt hàng & giao hàng</b><br>" +
-                          "🔄 <b>Bảo hành & đổi trả</b><br><br>" +
-                          "Ví dụ các câu hỏi tôi có thể trả lời:<br>" +
-                          "💬 <i>\"Có điện thoại Samsung không?\"</i><br>" +
-                          "💬 <i>\"Laptop giá rẻ nhất\"</i><br>" +
-                          "💬 <i>\"Chính sách giao hàng?\"</i><br>" +
-                          "💬 <i>\"Đổi trả trong bao lâu?\"</i><br><br>" +
-                          "<b>Hãy hỏi tôi về các sản phẩm bạn muốn mua nhé! 😊</b>";
+                sb.AppendLine("(No specific products found matching the user query in database)");
             }
 
-            return Json(new { response = response });
+            sb.AppendLine("\n--- USER QUERY ---");
+            sb.AppendLine(msg);
+
+            sb.AppendLine("\n--- INSTRUCTIONS ---");
+            sb.AppendLine("1. If the user asks for a product, recommend from the list above. Include links like <a href='/Product/Details/{id}'>{name}</a>.");
+            sb.AppendLine("2. If the user asks about policy, answer based on the STORE POLICIES section.");
+            sb.AppendLine("3. If the user asks something off-topic (weather, politics), politely refuse and guide back to shopping.");
+            sb.AppendLine("4. Be enthusiastic and professional. Emojis are allowed.");
+            
+            // 3. Call AI
+            string aiResponse = await _aiService.GenerateTextAsync(sb.ToString(), maxTokens: 800, temperature: 0.7);
+
+            if (string.IsNullOrEmpty(aiResponse))
+            {
+                // Fallback if AI fails
+                aiResponse = "Xin lỗi, hệ thống đang bận. Vui lòng thử lại sau hoặc liên hệ Hotline 1900-3003.";
+            }
+
+            return Json(new { response = aiResponse });
         }
     }
 

@@ -413,14 +413,17 @@ namespace MegaMall.Controllers
                 UserId = user.Id,
                 OrderDate = DateTime.UtcNow,
                 Status = OrderStatus.PendingPayment,
+                FullName = model.FullName,
                 ShippingAddress = model.Address,
                 ShippingCity = model.City,
                 PhoneNumber = model.PhoneNumber,
-                Note = model.Note,
+                Note = model.Note ?? "",
                 TotalAmount = cart.Sum(x => x.Total) - finalCouponDiscount - pointsDiscount,
-                CouponCode = coupon?.Code,
+                CouponCode = coupon?.Code ?? "",
                 DiscountAmount = finalCouponDiscount + pointsDiscount,
-                PaymentMethod = model.PaymentMethod
+                PaymentMethod = model.PaymentMethod,
+                PaymentStatus = "Pending",
+                TransactionId = ""
             };
 
             // Increment coupon usage
@@ -514,33 +517,9 @@ namespace MegaMall.Controllers
             
             if (model.PaymentMethod != PaymentMethod.COD)
             {
-                // For online payments (CreditCard, BankTransfer), redirect to VNPay payment gateway
-                Console.WriteLine($"Creating VNPay payment URL for order #{order.Id}, amount: {order.TotalAmount}");
-                
-                try
-                {
-                    var paymentResult = _vnpayClient.CreatePaymentUrl(order.TotalAmount, $"order_{order.Id}");
-                    string paymentUrl = paymentResult?.Url;
-                    
-                    Console.WriteLine($"VNPay URL generated: {paymentUrl}");
-                    
-                    if (string.IsNullOrEmpty(paymentUrl))
-                    {
-                        Console.WriteLine("ERROR: Payment URL is null or empty!");
-                        TempData["Error"] = "Unable to create payment URL. Please try again.";
-                        return RedirectToAction("OrderConfirmation", new { id = order.Id });
-                    }
-                    
-                    Console.WriteLine($"Redirecting to payment URL: {paymentUrl}");
-                    return Redirect(paymentUrl);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"ERROR creating payment URL: {ex.Message}");
-                    Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                    TempData["Error"] = "Payment gateway error. Please try again.";
-                    return RedirectToAction("OrderConfirmation", new { id = order.Id });
-                }
+                // For online payments (CreditCard, BankTransfer), redirect to Mock VNPay payment gateway
+                // This replaces the actual API call for demo purposes
+                return RedirectToAction("PaymentMock", new { orderId = order.Id, amount = order.TotalAmount });
             }
             else
             {
@@ -548,6 +527,41 @@ namespace MegaMall.Controllers
                 Console.WriteLine($"COD payment selected, redirecting to OrderConfirmation");
                 return RedirectToAction("OrderConfirmation", new { id = order.Id });
             }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult PaymentMock(int orderId, decimal amount)
+        {
+            ViewBag.Amount = amount;
+            ViewBag.OrderId = orderId;
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> PaymentMockConfirm(int orderId, bool success)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null) return NotFound();
+
+            if (success)
+            {
+                // Payment successful
+                order.Status = OrderStatus.Paid;
+                
+                // You might want to trigger email/notification here
+                TempData["Success"] = "Thanh toán thành công!";
+            }
+            else
+            {
+                // Payment cancelled or failed
+                order.Status = OrderStatus.Cancelled;
+                TempData["Error"] = "Thanh toán đã bị hủy hoặc thất bại.";
+            }
+            
+            await _context.SaveChangesAsync();
+            return RedirectToAction("OrderConfirmation", new { id = orderId });
         }
 
         private decimal CalculateCouponDiscount(Coupon coupon, decimal orderTotal)
