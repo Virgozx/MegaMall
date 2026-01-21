@@ -8,6 +8,8 @@ namespace MegaMall.Domain.Enums
         Shipped,
         Delivered,
         Cancelled,
-        Refunded
+        Refunded,
+        CancellationRequested, // 7
+        ReturnRequested        // 8
     }
 }

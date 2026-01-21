@@ -45,6 +45,9 @@ namespace MegaMall.Domain.Entities
         
         public string TransactionId { get; set; }
 
+        public string? CancelReason { get; set; }
+        public string? ReturnReason { get; set; }
+
         public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }
